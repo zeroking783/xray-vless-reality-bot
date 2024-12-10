@@ -1,0 +1,5 @@
+- name: xray
+  hosts: xray_servers
+  become: true
+  roles:
+    - xray-server

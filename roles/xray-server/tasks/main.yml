@@ -1,0 +1,7 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for xray-server
+
+- name: Install xray on server
+  include_tasks: install.yml
+  when: xray_action == "install"

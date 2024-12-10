@@ -1,0 +1,31 @@
+### INSTALL XRAY ON SERVER ###
+
+- name: Debug version xray
+  ansible.builtin.debug:
+    msg: xray version {{ ansible_env.XRAY_VERSION }} on server {{ inventory_hostname }}
+  when: ansible_env.XRAY_VERSION is defined and ansible_env.XRAY_VERSION != ''
+
+- name: Debug availability xray
+  ansible.builtin.debug:
+    msg: xray not installed on server {{ inventory_hostname }}
+  when: ansible_env.XRAY_VERSION is not defined or ansible_env.XRAY_VERSION == ''
+
+- name: Download xray
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/XTLS/Xray-install/046d9aa2432b3a6241d73c3684ef4e512974b594/install-release.sh
+    dest: /home/
+    mode: '0755'
+
+- name: Install xray
+  ansible.builtin.command:
+    cmd: /home/install-release.sh install --version {{ XRAY_VERSION_INSTALL }}
+
+- name: Ensure XRAY_VERSION is correctly set in /etc/environment
+  ansible.builtin.lineinfile:
+    path: "/etc/environment"
+    state: present
+    regexp: "^XRAY_VERSION="
+    line: "XRAY_VERSION={{ XRAY_VERSION_INSTALL }}"
+    create: yes
+
+    
