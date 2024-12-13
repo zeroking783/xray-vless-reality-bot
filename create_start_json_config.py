@@ -6,7 +6,7 @@ import json
 import pathlib
 
 
-### НАСТРОЙКА ЛОГЕРА ###
+# Logger configuration
 class ErrorExitHandler(logging.StreamHandler):
     def emit(self, record):
         super().emit(record)
@@ -23,9 +23,9 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-### Получаем приватный и публичный ключи
+# We get private and public keys
 def get_key():
-    logging.info("Ввожу команду для получения ключей")
+    logging.info("I enter the command to get the keys")
     command_get_key = "/usr/local/bin/xray x25519"
     result_command_get_key = subprocess.run(command_get_key, shell=True, capture_output=True, text=True)
 
@@ -34,10 +34,10 @@ def get_key():
     exit_code_result_command_get_key = result_command_get_key.returncode
 
     if exit_code_result_command_get_key == 0:
-        logging.info("Ключи получены успешно")
+        logging.info("Keys received successfully")
         logging.debug(f"keys: \n{stdout_result_command_get_key}")
     else:
-        logging.error(f"Ошибка при получении ключей: \n"
+        logging.error(f"Error while getting keys: \n"
                       f"{stderr_result_command_get_key}\n"
                       f"exit_code: {exit_code_result_command_get_key}")
 
@@ -49,9 +49,9 @@ def get_key():
     return private_key, public_key
 
 
-# Получаю shorIds
+# Get shorIds
 def get_shortids():
-    logging.info("Ввожу команду для получения ShortIds")
+    logging.info("I enter the command to get ShortIds")
     command_get_shortids = "openssl rand -hex 8"
     result_command_get_shortids = subprocess.run(command_get_shortids, shell=True, capture_output=True, text=True)
 
@@ -60,19 +60,20 @@ def get_shortids():
     exit_code_result_command_get_shortids = result_command_get_shortids.returncode
 
     if exit_code_result_command_get_shortids == 0:
-        logging.info("ShortIds получен успешно")
+        logging.info("ShortIds received successfully")
         logging.debug(f"shortIds: \n{stdout_result_command_get_shortids}")
     else:
-        logging.error("Ошибка при получении shortIds: \n"
+        logging.error("Error getting shortIds: \n"
                       f"{stderr_result_command_get_shortids}"
                       f"exit_code: {exit_code_result_command_get_shortids}\n")
 
     return stdout_result_command_get_shortids
 
 
-# Конфигурирую базовый json
+# Configuring basic json
 def create_start_config(private_key, public_key, short_ids):
 
+    global config_base_json
     config_base = {
         "log": {"loglevel": "info"},
         "routing": {"rules": [],
@@ -113,13 +114,14 @@ def create_start_config(private_key, public_key, short_ids):
     try:
         config_base_json = json.dumps(config_base, sort_keys=True, indent=4)
     except Exception as e:
-        logging.error(f"Не удалось собрать начальную конфигурацию xray: \n{e}")
+        logging.error(f"Failed to build initial xray configuration: \n{e}")
 
-    logging.info("Начальная конфигурация xray успешно собрана в json")
+    logging.info("Initial xray configuration successfully compiled into json")
 
     return config_base_json
 
 
+# I save the initial xray configuration in /usr/local/etc/xray/config.json
 def save_start_config(config_base_json):
 
     save_directory = "/usr/local/etc/xray"
@@ -128,20 +130,19 @@ def save_start_config(config_base_json):
     try:
         config_path.parent.mkdir(parents=True, exist_ok=True)
     except PermissionError as e:
-        logging.error(f"Недостаточно прав для создания директории: \n{e}")
+        logging.error(f"Insufficient permissions to create directory: \n{e}")
     except Exception as e:
-        logging.error(f"Неожиданая ошибка при создании директории: \n{e}")
-    logging.info("Директория /usr/local/etc/xray присутствует/создана")
+        logging.error(f"Unexpected error creating directory: \n{e}")
+    logging.info("Directory /usr/local/etc/xray is present/created")
 
     try:
         with open(config_path, "w") as file:
             file.write(config_base_json)
     except PermissionError as e:
-        logging.error(f"Недостаточно прав для записи в файл: \n{e}")
+        logging.error(f"Insufficient permissions to write to file: \n{e}")
     except Exception as e:
-        logging.error(f"Неожиданная ошибка при записи в файл: \n{e}")
-    logging.info("config_base_json успешно записался в /usr/local/etc/xray/config.json")
-
+        logging.error(f"Unexpected error writing to file: \n{e}")
+    logging.info("config_base_json successfully written to /usr/local/etc/xray/config.json")
 
 
 private_key, public_key = get_key()

@@ -4,6 +4,10 @@
   ansible.builtin.set_fact:
     xray_version: "{{ ansible_env.XRAY_VERSION | default('') }}"
 
+- name: Ensure XRAY_CONFIG is defined
+  ansible.builtin.set_fact:
+    xray_config: "{{ ansible_env.XRAY_CONFIG | default('') }}"
+
 - name: Debug version xray
   ansible.builtin.debug:
     msg: xray version {{ xray_version }} on server {{ inventory_hostname }}
@@ -14,17 +18,34 @@
     msg: xray not installed on server {{ inventory_hostname }}
   when: xray_version == ''
 
+- name: Debug version config for xray
+  ansible.builtin.debug:
+    msg: xray config version {{ xray_config }} on server {{ inventory_hostname }}
+  when: xray_config != ''
+
+- name: Debug availability xray config
+  ansible.builtin.debug:
+    msg: xray config is not installed on the server {{ inventory_hostname }}
+  when: xray_config == ''
+
+- name: Create project directory
+  ansible.builtin.file:
+    path: /home/xray_worker
+    state: directory
+    mode: '0755'
+  when: xray_version == ''
+
 - name: Download xray
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/XTLS/Xray-install/046d9aa2432b3a6241d73c3684ef4e512974b594/install-release.sh
-    dest: /home/
+    dest: /home/xray_worker/install-release.sh
     mode: '0755'
-  when: xray_version != XRAY_VERSION_INSTALL or xray_version is not defined
+  when: xray_version == ''
 
 - name: Install xray
   ansible.builtin.command:
-    cmd: /home/install-release.sh install --version {{ XRAY_VERSION_INSTALL }}
-  when: xray_version != XRAY_VERSION_INSTALL
+    cmd: /home/xray_worker/install-release.sh install --version {{ XRAY_VERSION_INSTALL }}
+  when: xray_version == ''
 
 - name: Ensure XRAY_VERSION is correctly set in /etc/environment
   ansible.builtin.lineinfile:
@@ -33,6 +54,29 @@
     regexp: "^XRAY_VERSION="
     line: "XRAY_VERSION={{ XRAY_VERSION_INSTALL }}"
     create: yes
-  when: xray_version != XRAY_VERSION_INSTALL
+  when: xray_version == ''
+
+- name: Download script create_start_json_config.py
+  ansible.builtin.get_url:
+    url: https://gitlab.com/zeroking783/xray-vless-reality-bot/-/raw/main/create_start_json_config.py
+    dest: /home/xray_worker/create_start_json_config.py
+    mode: '0755'
+  when: xray_config == ''
+
+- name: Perform basic configuration /usr/local/etc/xray/config.json
+  ansible.builtin.shell:
+    cmd: python3 /home/xray_worker/create_start_json_config.py
+  when: xray_config == ''
+
+- name: Ensure XRAY_CONFIG is correctly set in /etc/environment
+  ansible.builtin.lineinfile:
+    path: "/etc/environment"
+    state: present
+    regexp: "^XRAY_CONFIG="
+    line: "XRAY_CONFIG={{ XRAY_CONFIG_INSTALL }}"
+    create: yes
+  when: xray_config == ''
+
+
 
     

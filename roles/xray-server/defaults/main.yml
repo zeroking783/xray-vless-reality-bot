@@ -3,3 +3,4 @@
 # defaults file for xray-server
 
 XRAY_VERSION_INSTALL: 1.8.1
+XRAY_CONFIG_INSTALL: 0.1
