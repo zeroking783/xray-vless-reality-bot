@@ -46,6 +46,8 @@ def get_key():
     private_key = key_text_to_lines[0].split(":")[1].strip()
     public_key = key_text_to_lines[1].split(":")[1].strip()
 
+    logging.info("privateKey and publicKey successfully generated")
+
     return private_key, public_key
 
 
@@ -71,17 +73,19 @@ def get_shortids():
 
 
 # Configuring basic json
-def create_start_config(private_key, public_key, short_ids):
+def create_start_xray_config(private_key, public_key, short_ids):
 
-    global config_base_json
-    config_base = {
+    xray_config_base = {
         "log": {"loglevel": "info"},
         "routing": {"rules": [],
                     "domainStrategy": "AsIs"},
         "inbounds": [{"port": 443,
                       "protocol": "vless",
                       "tag": "vless_tls",
-                      "settings": {},
+                      "settings": {
+                          "clients": [],
+                          "decryption": "none"
+                      },
                       "streamSettings": {
                           "network": "tcp",
                           "security": "reality",
@@ -96,13 +100,13 @@ def create_start_config(private_key, public_key, short_ids):
                               "maxClientVer": "",
                               "maxTimeDiff": 0,
                               "shortIds": [short_ids]}
-                              },
-                          "sniffing": {
-                              "enabled": True,
-                              "destOverride": ["http", "tls"]
-                          }
+                          },
+                      "sniffing": {
+                          "enabled": True,
+                          "destOverride": ["http", "tls"]
                       }
-                     ],
+                  }
+              ],
         "outbounds": [
             {"protocol": "freedom",
              "tag": "direct"},
@@ -112,23 +116,23 @@ def create_start_config(private_key, public_key, short_ids):
     }
 
     try:
-        config_base_json = json.dumps(config_base, sort_keys=True, indent=4)
+        xray_config_base_json = json.dumps(xray_config_base, sort_keys=True, indent=4)
     except Exception as e:
         logging.error(f"Failed to build initial xray configuration: \n{e}")
 
     logging.info("Initial xray configuration successfully compiled into json")
 
-    return config_base_json
+    return xray_config_base_json
 
 
 # I save the initial xray configuration in /usr/local/etc/xray/config.json
-def save_start_config(config_base_json):
+def save_start_config(xray_config_base_json):
 
     save_directory = "/usr/local/etc/xray"
-    config_path = pathlib.Path(save_directory) / "config.json"
+    xray_config_path = pathlib.Path(save_directory) / "config.json"
 
     try:
-        config_path.parent.mkdir(parents=True, exist_ok=True)
+        xray_config_path.parent.mkdir(parents=True, exist_ok=True)
     except PermissionError as e:
         logging.error(f"Insufficient permissions to create directory: \n{e}")
     except Exception as e:
@@ -136,8 +140,8 @@ def save_start_config(config_base_json):
     logging.info("Directory /usr/local/etc/xray is present/created")
 
     try:
-        with open(config_path, "w") as file:
-            file.write(config_base_json)
+        with open(xray_config_path, "w") as file:
+            file.write(xray_config_base_json)
     except PermissionError as e:
         logging.error(f"Insufficient permissions to write to file: \n{e}")
     except Exception as e:
@@ -147,8 +151,8 @@ def save_start_config(config_base_json):
 
 private_key, public_key = get_key()
 short_ids = get_shortids()
-config_base_json = create_start_config(private_key, public_key, short_ids)
-save_start_config(config_base_json)
+xray_config_base_json = create_start_xray_config(private_key, public_key, short_ids)
+save_start_config(xray_config_base_json)
 
 
 
