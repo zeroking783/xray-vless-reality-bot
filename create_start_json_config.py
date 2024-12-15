@@ -125,34 +125,44 @@ def create_start_xray_config(private_key, public_key, short_ids):
     return xray_config_base_json
 
 
-# I save the initial xray configuration in /usr/local/etc/xray/config.json
-def save_start_config(xray_config_base_json):
+def save_information_in_file(directory, name_file, information, create_directory=False, sftp_client=None):
+    full_path = pathlib.Path(directory) / name_file
 
-    save_directory = "/usr/local/etc/xray"
-    xray_config_path = pathlib.Path(save_directory) / "config.json"
+    if create_directory:
+        logging.info(f"Start create directory {directory}")
+        try:
+            full_path.parent.mkdir(parents=True, exist_ok=True)
+        except PermissionError as e:
+            logging.error(f"Insufficient permissions to create directory {directory}: \n{e}")
+        except Exception as e:
+            logging.error(f"Unexpected error creating directory {directory}: \n{e}")
+        logging.info(f"Directory {directory} is present/created")
 
-    try:
-        xray_config_path.parent.mkdir(parents=True, exist_ok=True)
-    except PermissionError as e:
-        logging.error(f"Insufficient permissions to create directory: \n{e}")
-    except Exception as e:
-        logging.error(f"Unexpected error creating directory: \n{e}")
-    logging.info("Directory /usr/local/etc/xray is present/created")
-
-    try:
-        with open(xray_config_path, "w") as file:
-            file.write(xray_config_base_json)
-    except PermissionError as e:
-        logging.error(f"Insufficient permissions to write to file: \n{e}")
-    except Exception as e:
-        logging.error(f"Unexpected error writing to file: \n{e}")
-    logging.info("config_base_json successfully written to /usr/local/etc/xray/config.json")
+    if sftp_client is not None:
+        logging.info(f"I start writing to file {full_path} on the remote server")
+        try:
+            with sftp_client.open(str(full_path), 'w') as file:
+                file.write(information)
+        except PermissionError as e:
+            logging.error(f"Insufficient permissions to write to file {full_path}: \n{e}")
+        except Exception as e:
+            logging.error(f"Unexpected error writing to file {full_path}: \n{e}")
+        logging.info(f"{full_path} successfully written")
+    else:
+        try:
+            with open(full_path, "w") as file:
+                file.write(information)
+        except PermissionError as e:
+            logging.error(f"Insufficient permissions to write to file {full_path}: \n{e}")
+        except Exception as e:
+            logging.error(f"Unexpected error writing to file {full_path}: \n{e}")
+        logging.info(f"{full_path} successfully written")
 
 
 private_key, public_key = get_key()
 short_ids = get_shortids()
 xray_config_base_json = create_start_xray_config(private_key, public_key, short_ids)
-save_start_config(xray_config_base_json)
+save_information_in_file("/usr/local/etc/xray", "config.json", xray_config_base_json, True)
 
 
 
