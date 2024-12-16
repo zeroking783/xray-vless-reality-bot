@@ -5,8 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8e573746-f72d-424f-9db0-9fc0d5d47482" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/add_client_in_xray_config.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/xray-vless-reality-bot.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/base_function.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/logger.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/setup_security_server.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ssh_client.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test_scripts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/add_client_in_xray_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/add_client_in_xray_config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/create_start_json_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/create_start_json_config.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -35,6 +42,8 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
     "last_opened_file_path": "/home/bakvivas/Documents/Projects/xray-vless-reality-bot",
     "settings.editor.selected.configurable": "reference.settingsdialog.project.grazie"
