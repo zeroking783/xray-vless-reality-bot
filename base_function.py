@@ -7,6 +7,7 @@ import crypt
 from ssh_client import create_sftp_connection, close_sftp_connection
 import random
 import string
+import configparser
 
 
 def get_remote_ip(ssh_client):
@@ -448,7 +449,227 @@ def create_ssh_keys(key_name, directory="/home/xray/.ssh", recreate=False):
                      f"EXIT_CODE: {exit_code}")
 
 
+def check_premissions(path, ssh_client=None):
+    if ssh_client:
+        remote_ip = get_remote_ip(ssh_client)
+        logger.info(f"Получаю права доступа на файл {path}", remote_ip=remote_ip)
+
+        file_exists = check_exists_something(path, ssh_client=ssh_client)
+
+        if file_exists is False:
+            logger.error(f"Файла {path} не существует", remote_ip=remote_ip)
+            return None
+
+        command_check_premissions = f"stat -c %a {path}"
+        stdin, stdout, stderr = ssh_client.exec_command(command_check_premissions)
+        exit_code = stdout.channel.recv_exit_status()
+        stdout_result = stdout.read().decode().strip()
+        stderr_result = stderr.read().decode()
+
+        if exit_code == 0:
+            logger.info(f"Файл {path} имеет права доступа {stdout_result}", remote_ip=remote_ip)
+            return stdout_result
+        else:
+            logger.error(f"Не удалось получить права доступа на файл {path}:\n"
+                         f"{stderr_result}\n"
+                         f"EXIT_CODE: {exit_code}", remote_ip=remote_ip)
+            return None
+    else:
+        logger.info(f"Получаю права доступа на файл {path}")
+
+        file_exists = check_exists_something(path)
+
+        if file_exists is False:
+            logger.error(f"Файла {path} не существует")
+            return None
+
+        command_check_premissions = ["stat", "-c", "%a", path]
+        result_command = subprocess.run(command_check_premissions, capture_output=True, text=True)
+        stderr_result = result_command.stderr
+        stdout_result = result_command.stdout
+        exit_code = result_command.returncode
+
+        if exit_code == 0:
+            logger.info(f"Файл {path} имеет права доступа {stdout_result}")
+            return stdout_result
+        else:
+            logger.error(f"Не удалось получить права доступа на файл {path}:\n"
+                         f"{stderr_result}\n"
+                         f"EXIT_CODE: {exit_code}")
+            return None
+
+
+def change_premissions(path, right, recursion=True, ssh_client=None):
+    if ssh_client:
+        remote_ip = get_remote_ip(ssh_client)
+        logger.info(f"Изменяю права доступа на файл {path} на {right}", remote_ip=remote_ip)
+
+        file_exists = check_exists_something(path, ssh_client=ssh_client)
+
+        if file_exists is False:
+            logger.error(f"Файла {path} не существует", remote_ip=remote_ip)
+            return None
+
+        premissions_now = check_premissions(path, ssh_client)
+        if premissions_now == right:
+            logger.info(f"Файл {path} уже имеет права доступа {right}", remote_ip=remote_ip)
+            return None
+
+        if recursion:
+            command_change_premissions = f"chmod -R {right} {path}"
+            logger.debug(f"Права будут изменяться рекурсивно", remote_ip=remote_ip)
+        else:
+            command_change_premissions = f"chmod {right} {path}"
+            logger.debug(f"Права будут изменяться не рекурсивно", remote_ip=remote_ip)
+        stdin, stdout, stderr = ssh_client.exec_command(command_change_premissions)
+        exit_code = stdout.channel.recv_exit_status()
+        stderr_result = stderr.read().decode()
+
+        if exit_code == 0:
+            logger.info(f"Права доступа на файл {path} успешно изменены на {right}", remote_ip=remote_ip)
+        else:
+            logger.error(f"Ошибка при попытке изменить права доступа файла {path} на {right}:\n"
+                         f"{stderr_result}\n"
+                         f"EXIT_CODE: {exit_code}", remote_ip=remote_ip)
+    else:
+        file_exists = check_exists_something(path)
+
+        if file_exists is False:
+            logger.error(f"Файла {path} не существует")
+            return None
+
+        premissions_now = check_premissions(path)
+        if premissions_now == right:
+            logger.info(f"Файл {path} уже имеет права доступа {right}")
+            return None
+
+        if recursion:
+            command_change_premissions = ["chmod", "-R", right, path]
+            logger.debug(f"Права будут изменяться рекурсивно")
+        else:
+            command_change_premissions = ["chmod", right, path]
+            logger.debug(f"Права будут изменяться не рекурсивно")
+        result_command = subprocess.run(command_change_premissions, capture_output=True, text=True)
+        stderr_result = result_command.stderr
+        exit_code = result_command.returncode
+
+        if exit_code == 0:
+            logger.info(f"Права доступа на файл {path} успешно изменены на {right}")
+        else:
+            logger.error(f"Ошибка при попытке изменить права доступа файла {path} на {right}:\n"
+                         f"{stderr_result}\n"
+                         f"EXIT_CODE: {exit_code}")
+
+
+def users_list(ssh_client=None):
+    if ssh_client:
+        remote_ip = get_remote_ip(ssh_client)
+        logger.info(f"Начинаю читать список пользователей", remote_ip=remote_ip)
+        sftp_client = create_sftp_connection(ssh_client)
+
+        logger.debug(f"Создаю список со всеми пользователями", remote_ip=remote_ip)
+        try:
+            with sftp_client.open("/etc/passwd", "r") as passwd_file:
+                users = []
+                for line in passwd_file:
+                    user = line.split(":")[0]
+                    users.append(user)
+                logger.info(f"Пользователи из файла /etc/passwd успешно прочитаны", remote_ip=remote_ip)
+                return users
+        except Exception as e:
+            logger.error(f"Произошла ошибка при чтении /etc/passwd:\n {e}", remote_ip=remote_ip)
+    else:
+        logger.info(f"Начинаю читать список пользователей")
+        logger.debug(f"Создаю список со всеми пользователями")
+        try:
+            with open("/etc/passwd", "r") as passwd_file:
+                users = []
+                for line in passwd_file:
+                    user = line.split(":")[0]
+                    users.append(user)
+                logger.info(f"Пользователи из файла /etc/passwd успешно прочитаны")
+                return users
+        except Exception as e:
+            logger.error(f"Произошла ошибка при чтении /etc/passwd:\n {e}")
+
+
+def get_free_name_server(path="/home/xray/xray-vless-reality-bot/hosts.ini"):
+    xray_servers = None
+    logger.info(f"Получаю незанятое имя для сервера")
+
+    logger.debug(f"Запускаю парсер конфигов")
+    config = configparser.ConfigParser()
+
+    logger.debug(f"Пытаюсь прочитать инвентарь ansible")
+    try:
+        config.read(path)
+        logger.debug(f"Инвентарь ansible успешно прочитан")
+    except Exception as e:
+        logger.error(f"Ошибка при чтении инвенторя ansible")
+
+    logger.debug(f"Пытаюсь получить названия серверов в инвенторе ansible")
+    try:
+        xray_servers = config.options("xray_servers")
+        logger.debug(f"Названия всех серверов xray_servers успешно прочитаны")
+    except Exception as e:
+        logger.error(f"Ошибка при получении списка названий серверов xray_servers в инвенторе ansible: \n{e}")
+
+    logger.debug(f"Записываю номера занятых серверов и сортирую их")
+    number_servers_list = []
+    for i in xray_servers:
+        server_n = i.split(" ")[0].strip()
+        n = server_n.split("-")[1].strip()
+        number_servers_list.append(int(n))
+    number_servers_list = sorted(number_servers_list)
+
+    logger.debug(f"Начинаю переберать номера серверов, для поиска свободного")
+    for i in range(1, len(number_servers_list)):
+        if number_servers_list[i] != number_servers_list[i - 1] + 1:
+            new_number = number_servers_list[i - 1] + 1
+            new_server_name = "server-" + str(new_number)
+            logger.info(f"Найдено свободное имя для сервера: {new_server_name}")
+            return new_server_name
+    logger.error(f"Не найдено свободное имя для сервера")
+
+
 def transfer_ssh_key(key_name, ssh_client, remote_directory, local_directory="/home/xray/.ssh"):
+    public_key_path = local_directory + "/" + key_name + ".pub"
+
+    with open(public_key_path, 'r') as pub_key_file:
+        public_key = pub_key_file.read().strip()
+
+    create_something()
 
     create_sftp_connection(ssh_client)
 
+
+def write_data_in_file(path, data, recreate=False, ssh_client=None):
+    if ssh_client:
+        remote_ip = get_remote_ip(ssh_client)
+        logger.info(f"Начинаю записывать информацию {data} в файл {path}", remote_ip=remote_ip)
+
+        write_mode = '>' if recreate else '>>'
+
+        logger.debug(f"Использую режим записи {write_mode} для файла {path}", remote_ip=remote_ip)
+        command_write_in_file = f"echo '{data}' {write_mode} {path}"
+        stdin, stdout, stderr = ssh_client.exec_command(command_write_in_file)
+        exit_code = stdout.channel.recv_exit_status()
+        stderr_result = stderr.read().decode()
+
+        if exit_code == 0:
+            logger.info(f"Информация {data} была успешно записана в файл {path} способом {write_mode}", remote_ip=remote_ip)
+        else:
+            logger.error(f"Произошла ошибка при записи {data} в файл {path} способом {write_mode}:\n "
+                         f"{stderr_result}\n"
+                         f"EXIT_CODE: {exit_code}", remote_ip=remote_ip)
+    else:
+        logger.info(f"Начинаю записывать данные {data} в файл {path}")
+
+        write_mode = 'w' if recreate else 'a'
+        logger.debug(f"Использую режим записи {write_mode} для файла {path}")
+        try:
+            with open(path, write_mode) as file:
+                file.write(data)
+            logger.info(f"Информация {data} была успешно записана в файл {path} способом {write_mode}")
+        except Exception as e:
+            logger.error(f"Произошла ошибка при записи {data} в файл {path} способом {write_mode}:\n {e}")

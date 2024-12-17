@@ -4,24 +4,31 @@ import argparse
 import paramiko
 import time
 
-def parse_arguments_for_ssh():
+def parse_arguments_for_ssh(default_ip=None, default_username="root", default_password=None, default_port=22, default_key_path=None):
+
     logger.info("Start parse arguments")
     parser = argparse.ArgumentParser(description="Example Python script to connect to a server")
 
-    parser.add_argument('--ip', type=str, required=True, help='IP address of the server')
-    parser.add_argument('--username', type=str, default="root", help='The user for connect to via ssh')
-    parser.add_argument('--password', type=str, help='Password for SSH login')
-    parser.add_argument('--port', type=int, default=22, help="Port for SSH login")
-    parser.add_argument('--key_path', type=str, help="Path to private key")
+    parser.add_argument('--ip', type=str, default=default_ip, help='IP address of the server')
+    parser.add_argument('--username', type=str, default=default_username, help='The user for connect to via ssh')
+    parser.add_argument('--password', type=str, default=default_password, help='Password for SSH login')
+    parser.add_argument('--port', type=int, default=default_port, help="Port for SSH login")
+    parser.add_argument('--key_path', type=str, default=default_key_path, help="Path to private key")
 
     args = parser.parse_args()
     logger.info("Arguments successfully read")
 
     return args.ip, args.username, args.password, args.port, args.key_path
 
-def create_ssh_connection():
-    logger.debug("Получаю аргументы запуска кода")
-    ip, username, password, port, key_path = parse_arguments_for_ssh()
+def create_ssh_connection(ip=None, username="root", password=None, port=22, key_path=None):
+
+    ip, username, password, port, key_path = parse_arguments_for_ssh(
+        default_ip=ip,
+        default_username=username,
+        default_password=password,
+        default_port=port,
+        default_key_path=key_path
+    )
 
     logger.debug("Создаю SSH-client")
     ssh_client = paramiko.SSHClient()
@@ -49,7 +56,7 @@ def create_ssh_connection():
                                 look_for_keys=False)
                 except Exception as e:
                     logger.error(f"Не удалось подключиться к серверу {ip} по ssh с помощью пароля:\n {e}")
-            if key_path:
+            elif key_path:
                 logger.debug("Пробую подключиться по ssh key")
                 try:
                     ssh_client.connect(hostname=ip, port=port, username=username, key_filename=key_path, allow_agent=False,
@@ -68,18 +75,30 @@ def create_ssh_connection():
     return ssh_client
 
 
-def closed_ssh_connection(ssh_client):
+def closed_ssh_connection(ssh_client, ip=None, username="root", password=None, port=22, key_path=None):
     logger.debug("Получаю информацию о ip сервера")
-    ip, username, password, port, key_path = parse_arguments_for_ssh()
+    ip, username, password, port, key_path = parse_arguments_for_ssh(
+        default_ip=ip,
+        default_username=username,
+        default_password=password,
+        default_port=port,
+        default_key_path=key_path
+    )
     logger.info(f"Закрываю ssh соединение с сервером {ip}")
     try:
         ssh_client.close()
     except Exception as e:
         logging.warning(f"Не удалось закрыть SSH соединение с сервером {ip}")
 
-def create_sftp_connection(ssh_client=None):
+def create_sftp_connection(ssh_client=None, ip=None, username="root", password=None, port=22, key_path=None):
     logger.debug("Получаю информацию о ip сервера")
-    ip, username, password, port, key_path = parse_arguments_for_ssh()
+    ip, username, password, port, key_path = parse_arguments_for_ssh(
+        default_ip=ip,
+        default_username=username,
+        default_password=password,
+        default_port=port,
+        default_key_path=key_path
+    )
 
     if ssh_client is None:
         ssh_client = create_ssh_connection()
@@ -105,8 +124,14 @@ def create_sftp_connection(ssh_client=None):
                 logger.error(f"Не удалось уставноить соединение SFTP с сервером {ip} после 10 попыток")
 
 
-def close_sftp_connection(sftp_client):
+def close_sftp_connection(sftp_client, ip=None, username="root", password=None, port=22, key_path=None):
     logger.debug("Получаю информацию о ip сервера")
-    ip, username, password, port, key_path = parse_arguments_for_ssh()
+    ip, username, password, port, key_path = parse_arguments_for_ssh(
+        default_ip=ip,
+        default_username=username,
+        default_password=password,
+        default_port=port,
+        default_key_path=key_path
+    )
     logger.info(f"Закрываю ssh соединение с сервером {ip}")
     sftp_client.close()
