@@ -45,7 +45,7 @@ def get_local_ip():
 # Основная конфигурация логгера
 def setup_logger():
     logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
 
     local_ip = get_local_ip()
     handler = ErrorExitHandler()

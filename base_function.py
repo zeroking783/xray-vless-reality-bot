@@ -95,8 +95,8 @@ def create_something(path, is_file=False, ssh_client=None, recreate=False):
     path_list = path.strip().split("/")[1:]
     parent_path = "/" + "/".join(path_list[:-1])
 
-    if "." in path_list[-1]:
-        is_file = True
+    # if "." in path_list[-1][1:]:
+    #     is_file = True
 
     if ssh_client:
         remote_ip = get_remote_ip(ssh_client)
@@ -673,3 +673,5 @@ def write_data_in_file(path, data, recreate=False, ssh_client=None):
             logger.info(f"Информация {data} была успешно записана в файл {path} способом {write_mode}")
         except Exception as e:
             logger.error(f"Произошла ошибка при записи {data} в файл {path} способом {write_mode}:\n {e}")
+
+

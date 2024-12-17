@@ -20,8 +20,8 @@ def parse_arguments_for_ssh(default_ip=None, default_username="root", default_pa
 
     return args.ip, args.username, args.password, args.port, args.key_path
 
-def create_ssh_connection(ip=None, username="root", password=None, port=22, key_path=None):
 
+def create_ssh_connection(ip=None, username="root", password=None, port=22, key_path=None):
     ip, username, password, port, key_path = parse_arguments_for_ssh(
         default_ip=ip,
         default_username=username,
@@ -38,39 +38,56 @@ def create_ssh_connection(ip=None, username="root", password=None, port=22, key_
     known_hosts = ssh_client.get_host_keys()
 
     if ip in known_hosts:
-        logger.info(f"Ключ сервера {ip} хранится в know_hosts")  
+        logger.info(f"Ключ сервера {ip} хранится в known_hosts")
     else:
         logger.warning(f"Ключ сервера {ip} не найден")
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     logger.info(f"Подключаюсь к серверу {ip}")
-    for attempt in range(1, 11):
+
+    for attempt in range(1, 11):  # 10 попыток подключения
         logger.debug(f"Попытка подключения: {attempt}")
         try:
+            # Проверка активного соединения
             if ssh_client.get_transport() and ssh_client.get_transport().is_active():
-                break
+                logger.info("Транспорт уже активен")
+                break  # Если подключение уже установлено, выходим из цикла
+
             if password:
                 logger.debug("Пробую подключиться по паролю")
-                try:
-                    ssh_client.connect(hostname=ip, port=port, username=username, password=password, allow_agent=False,
-                                look_for_keys=False)
-                except Exception as e:
-                    logger.error(f"Не удалось подключиться к серверу {ip} по ssh с помощью пароля:\n {e}")
+                ssh_client.connect(
+                    hostname=ip,
+                    port=port,
+                    username=username,
+                    password=password,
+                    allow_agent=False,
+                    look_for_keys=False
+                )
+                logger.info("Подключение по паролю успешно")
+                break  # Успешное подключение, выходим из цикла
+
             elif key_path:
                 logger.debug("Пробую подключиться по ssh key")
-                try:
-                    ssh_client.connect(hostname=ip, port=port, username=username, key_filename=key_path, allow_agent=False,
-                                    look_for_keys=False)
-                except Exception as e:
-                    logger.error(f"Не удалось подключиться к серверу {ip} по ssh key:\n {e}")
-            logger.info("SSH connection to server successful")
-            break
+                ssh_client.connect(
+                    hostname=ip,
+                    port=port,
+                    username=username,
+                    key_filename=key_path,
+                    allow_agent=False,
+                    look_for_keys=False
+                )
+                logger.info("Подключение по ключу успешно")
+                break  # Успешное подключение, выходим из цикла
+
         except Exception as e:
+            logger.error(f"Ошибка подключения на попытке {attempt}: {e}")
             if attempt < 10:
-                logger.debug(f"Connection attempt number {attempt} was unsuccessful: \n{e}")
-                time.sleep(7)
-            if attempt == 10:
-                logger.error(f"Failed to connect to server {ip }via SSH after 10 attempts")
+                logger.debug(f"Попытка {attempt} неудачна, ждем перед следующей попыткой...")
+                time.sleep(7)  # Задержка перед повторной попыткой
+                continue  # Переход к следующей попытке
+            else:
+                logger.error(f"Не удалось подключиться к серверу {ip} после 10 попыток")
+                raise e  # Пробрасываем исключение после последней попытки
 
     return ssh_client
 
