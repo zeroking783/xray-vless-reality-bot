@@ -9,11 +9,11 @@ def parse_arguments_for_ssh(default_ip=None, default_username="root", default_pa
     logger.info("Start parse arguments")
     parser = argparse.ArgumentParser(description="Example Python script to connect to a server")
 
-    parser.add_argument('--ip', type=str, default=default_ip, help='IP address of the server')
-    parser.add_argument('--username', type=str, default=default_username, help='The user for connect to via ssh')
-    parser.add_argument('--password', type=str, default=default_password, help='Password for SSH login')
-    parser.add_argument('--port', type=int, default=default_port, help="Port for SSH login")
-    parser.add_argument('--key_path', type=str, default=default_key_path, help="Path to private key")
+    parser.add_argument('--ip', type=str, default="127.0.0.1", help='IP address of the server')
+    parser.add_argument('--username', type=str, default="root", help='The user for connect to via ssh')
+    parser.add_argument('--password', type=str, default="password", help='Password for SSH login')
+    parser.add_argument('--port', type=int, default="22", help="Port for SSH login")
+    parser.add_argument('--key_path', type=str, default="/home/xray/.ssh/server-n", help="Path to private key")
 
     args = parser.parse_args()
     logger.info("Arguments successfully read")
@@ -22,6 +22,13 @@ def parse_arguments_for_ssh(default_ip=None, default_username="root", default_pa
 
 
 def create_ssh_connection(ip=None, username="root", password=None, port=22, key_path=None):
+
+    print(f"before ip: {ip}")
+    print(f"before username: {username}")
+    print(f"before password: {password}")
+    print(f"before port: {port}")
+    print(f"before key path: {key_path}")
+
     ip, username, password, port, key_path = parse_arguments_for_ssh(
         default_ip=ip,
         default_username=username,
@@ -29,6 +36,12 @@ def create_ssh_connection(ip=None, username="root", password=None, port=22, key_
         default_port=port,
         default_key_path=key_path
     )
+
+    print(f"after ip: {ip}")
+    print(f"after username: {username}")
+    print(f"after password: {password}")
+    print(f"after port: {port}")
+    print(f"after key path: {key_path}")
 
     logger.debug("Создаю SSH-client")
     ssh_client = paramiko.SSHClient()

@@ -51,7 +51,7 @@ def setup_logger():
     handler = ErrorExitHandler()
 
     # Формат логов
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s').
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
