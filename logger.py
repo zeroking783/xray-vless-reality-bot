@@ -1,7 +1,7 @@
 import logging
 import socket
 import sys
-import inspect  # Для получения имени функции
+import os
 
 
 # Обработчик для выхода при ошибках
@@ -19,15 +19,17 @@ class ContextualLogger(logging.LoggerAdapter):
         self.local_ip = local_ip
 
     def process(self, msg, kwargs):
-        # Получаем текущую функцию из стека вызовов
-        current_function = inspect.stack()[2].function
+        # Получаем название файла без пути
+        current_file = os.path.basename(sys.argv[0])  # Извлекаем только имя файла
+        current_function = "Unknown function"
+        current_line = "Unknown line"
 
         # Если передан remote_ip, используем его, иначе только local_ip
         remote_ip = kwargs.pop("remote_ip", None)
         if remote_ip:
-            return f"[{current_function}] [{self.local_ip} -> {remote_ip}] {msg}", kwargs
+            return f"[{current_file}] [{self.local_ip} -> {remote_ip}] {msg}", kwargs
         else:
-            return f"[{current_function}] [{self.local_ip}] {msg}", kwargs
+            return f"[{current_file}] [{self.local_ip}] {msg}", kwargs
 
 
 # Функция для получения локального IP-адреса
@@ -38,28 +40,24 @@ def get_local_ip():
             s.connect(("8.8.8.8", 80))
             return s.getsockname()[0]
     except Exception:
-        # Фоллбэк: используем localhost
         return "127.0.0.1"
 
 
 # Основная конфигурация логгера
 def setup_logger():
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
 
     local_ip = get_local_ip()
     handler = ErrorExitHandler()
 
-    # Формат логов
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s').
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
-    # Инициализация обёртки для логгера
     context_logger = ContextualLogger(logger, local_ip)
 
     return context_logger
 
 
-# Получаем и экспортируем логгер
 logger = setup_logger()
