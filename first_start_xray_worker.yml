@@ -1,0 +1,5 @@
+- name: first_start_worker
+  hosts: xray-workers
+  become: true
+  roles:
+    - setup-worker-servers
