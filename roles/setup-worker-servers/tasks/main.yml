@@ -1,0 +1,56 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for initial-worker-server
+
+
+#- name: Update all packages to their latest version
+#  ansible.builtin.apt:
+#    name: "*"
+#    state: latest
+
+- name: Install requirements packages
+  ansible.builtin.apt:
+    pkg:
+      - python3
+      - python3-pip
+      - python3-virtualenv
+      - python3-venv
+
+- name: Generate root password
+  ansible.builtin.set_fact:
+    root_password: "{{ lookup('password', '/dev/null', length=20, chars=['ascii_letters', 'digits', 'punctuation']) }}"
+
+- name: Debug root password
+  ansible.builtin.debug:
+    msg: "root password {{ root_password }}"
+
+#- name: Install virtualenv module
+#  pip:
+#    name: virtualenv
+#    state: latest
+
+#- name: Create virtual environment
+#  ansible.builtin.pip:
+#    virtualenv: /home/venv
+#    virtualenv_command: python3 -m venv
+
+- name: Create passlib in venv
+  ansible.builtin.pip:
+    name: passlib
+    state: latest
+    virtualenv: /home/venv
+
+- name: Hash root password
+  ansible.builtin.command:
+    cmd: "/home/venv/bin/python -c 'from passlib.hash import sha512_crypt; print(sha512_crypt.hash(\"{{ root_password }}\"))'"
+  register: hashed_password_output
+
+- name: Set hashed password
+  ansible.builtin.set_fact:
+    hashed_password: "{{ hashed_password_output.stdout }}"
+
+- name: Change root password
+  ansible.builtin.user:
+    name: root
+    password: "{{ hashed_password }}"
+    update_password: always
