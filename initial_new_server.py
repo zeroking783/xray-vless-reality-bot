@@ -14,18 +14,18 @@ db_user = os.getenv("DB_INIT_USER")
 db_password = os.getenv("DB_INIT_PASSWORD")
 
 query_insert_new_server = """
-    INSERT INTO servers.initial (json_data) VALUES (%s);
+    INSERT INTO servers.initial (connect_data) VALUES (%s);
 """
 
 query_check_ansible_host = """
     SELECT id FROM servers.initial
-    WHERE json_data ->> 'ansible_host' = %s;
+    WHERE connect_data ->> 'ansible_host' = %s;
 """
 
 query_update_old_server = """
     UPDATE servers.initial
-    SET json_data = %s, processed = False
-    WHERE json_data ->> 'ansible_host' = %s;
+    SET connect_data = %s, processed = False
+    WHERE connect_data ->> 'ansible_host' = %s;
 """
 
 logger.info(f"Пытаюсь подключиться к базе данных {db_name}")
