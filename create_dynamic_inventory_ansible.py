@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from logger import logger
 import psycopg2
 import csv
@@ -21,6 +23,12 @@ except Exception as e:
 base_dynamic_inventory = {
     "_meta": {
         "hostvars": {}
+    },
+    "all": {
+        "children": ["xray-workers"]
+    },
+    "xray-workers": {
+        "hosts": []
     }
 }
 
@@ -61,6 +69,7 @@ for row in rows:
                 f"c ip {row[1]["ansible_host"]} из servers.initial")
     try:
         base_dynamic_inventory["_meta"]["hostvars"][inventory_hostname] = row[1]
+        base_dynamic_inventory["xray-workers"]["hosts"].append(inventory_hostname)
         logger.info(f"Новый сервер {inventory_hostname} с ip {row[1]["ansible_host"]} "
                     f"успешно добавлен в dynamic inventory")
     except Exception as e:
