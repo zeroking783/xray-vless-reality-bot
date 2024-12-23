@@ -82,3 +82,7 @@
 - name: debag all_servers_data
   ansible.builtin.debug:
     msg: "all_servers_data: {{ all_servers_data }}"
+
+- name: Test print json in python
+  ansible.builtin.command:
+    cmd: test.py '{{ all_servers_data }}'
