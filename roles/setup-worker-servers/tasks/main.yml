@@ -80,3 +80,65 @@
 - name: debag all_servers_data
   ansible.builtin.debug:
     msg: "all_servers_data: {{ all_servers_data }}"
+
+- name: Generate new port
+  ansible.builtin.set_fact:
+    new_port: "{{ 65000 | random(start=30000) }}"
+
+- name: Debug new port
+  ansible.builtin.debug:
+    msg: "{{ new_port }}"
+
+- name: Get stats of a ssh.socket
+  ansible.builtin.stat:
+    path: /lib/systemd/system/ssh.socket
+  register: stat_ssh_socket
+
+- name: Create folder for ssh socket if it does not exist
+  ansible.builtin.file:
+    path: /lib/systemd/system/ssh.socket
+    state: file
+    recurse: true
+  when: stat_ssh_socket.stat.exists is false
+
+- name: Create config file
+  ansible.builtin.copy:
+    dest: /lib/systemd/system/ssh.socket
+    content: |
+      [Socket]
+      ListenStream={{ new_port }}
+  when: stat_ssh_socket.stat.exists is false
+
+- name: Edit ssh.socket if exist
+  ansible.builtin.lineinfile:
+    path: /lib/systemd/system/ssh.socket
+    regexp: "^ListenStream"
+    line: ListenStream={{ new_port }}
+  when: stat_ssh_socket.stat.exists is true
+
+- name: Reload systemd manager
+  systemd:
+    daemon_reload: yes
+
+- name: Edit sshd_config
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^Port"
+    line: Port {{ new_port }}
+
+- name: Restart SSH service
+  ansible.builtin.service:
+    name: "ssh"
+    state: restarted
+
+- name: Allow all access to tcp new port
+  community.general.ufw:
+    rule: allow
+    port: "{{ new_port }}"
+    proto: tcp
+
+- name: Deny all access to port 22
+  community.general.ufw:
+    rule: deny
+    port: '22'
+    proto: tcp
