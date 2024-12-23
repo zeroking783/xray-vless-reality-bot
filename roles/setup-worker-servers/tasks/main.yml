@@ -13,12 +13,16 @@
     pkg:
       - python3
       - python3-pip
-      - python3-virtualenv
       - python3-venv
+    state: present
 
 - name: Save root password
   ansible.builtin.set_fact:
     root_password: "{{ ansible_password }}"
+
+- name: Debug
+  ansible.builtin.debug:
+    msg: "{{ root_password }}"
 
 - name: Generate root password
   ansible.builtin.set_fact:
@@ -26,27 +30,21 @@
 
 - name: Debug root password
   ansible.builtin.debug:
-    msg: "root password {{ new_root_password }}"
+    msg: "new root password {{ new_root_password }}"
 
-#- name: Install virtualenv module
-#  pip:
-#    name: virtualenv
-#    state: latest
+- name: Create virtualenv for python for basic commands
+  ansible.builtin.command:
+    cmd: python3 -m venv {{ venv_directory }}
 
-#- name: Create virtual environment
-#  ansible.builtin.pip:
-#    virtualenv: /home/venv
-#    virtualenv_command: python3 -m venv
-
-- name: Create passlib in venv
+- name: Install passlib in the virtual environment
   ansible.builtin.pip:
     name: passlib
+    virtualenv: "{{ venv_directory }}"
     state: latest
-    virtualenv: /home/venv
 
 - name: Hash root password
   ansible.builtin.command:
-    cmd: "/home/venv/bin/python -c 'from passlib.hash import sha512_crypt; print(sha512_crypt.hash(\"{{ root_password }}\"))'"
+    cmd: "{{ venv_directory }}/bin/python -c 'from passlib.hash import sha512_crypt; print(sha512_crypt.hash(\"{{ new_root_password }}\"))'"
   register: hashed_password_output
 
 - name: Set hashed password
@@ -82,7 +80,3 @@
 - name: debag all_servers_data
   ansible.builtin.debug:
     msg: "all_servers_data: {{ all_servers_data }}"
-
-- name: Test print json in python
-  ansible.builtin.command:
-    cmd: test.py '{{ all_servers_data }}'
