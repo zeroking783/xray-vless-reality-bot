@@ -5,11 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8e573746-f72d-424f-9db0-9fc0d5d47482" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/first_start_xray_worker.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/roles/setup-worker-servers/tasks/set_env_for_db_connect.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/create_database/initial_servers_table" beforeDir="false" afterPath="$PROJECT_DIR$/create_database/initial_servers_table.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/create_database/initial_servers_table.sql" beforeDir="false" afterPath="$PROJECT_DIR$/create_database/initial_servers_table.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/create_dynamic_inventory_ansible.py" beforeDir="false" afterPath="$PROJECT_DIR$/create_dynamic_inventory_ansible.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/initial_new_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/initial_new_server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/first_start_xray_worker.yml" beforeDir="false" afterPath="$PROJECT_DIR$/first_start_xray_worker.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/initial_new_servers_list.csv" beforeDir="false" afterPath="$PROJECT_DIR$/initial_new_servers_list.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/roles/initial-worker-server/README.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/roles/initial-worker-server/defaults/main.yml" beforeDir="false" />
@@ -19,6 +20,10 @@
       <change beforePath="$PROJECT_DIR$/roles/initial-worker-server/tests/inventory" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/roles/initial-worker-server/tests/test.yml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/roles/initial-worker-server/vars/main.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/roles/setup-worker-servers/tasks/main.yml" beforeDir="false" afterPath="$PROJECT_DIR$/roles/setup-worker-servers/tasks/main.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/setup_security_server.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ssh_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/ssh_client.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_scripts.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,18 +48,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.create_dynamic_inventory_ansible.executor": "Run",
-    "Python.initial_new_server.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/home/bakvivas/Documents/Projects/xray-vless-reality-bot",
-    "settings.editor.selected.configurable": "reference.settingsdialog.project.grazie"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.create_dynamic_inventory_ansible.executor&quot;: &quot;Run&quot;,
+    &quot;Python.initial_new_server.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/bakvivas/Documents/Projects/xray-vless-reality-bot&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.grazie&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
