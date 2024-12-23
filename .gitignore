@@ -3,3 +3,4 @@ vault_password_file.txt
 .idea
 __pycache__
 .git
+.vagrant
