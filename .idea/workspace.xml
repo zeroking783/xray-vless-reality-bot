@@ -5,20 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8e573746-f72d-424f-9db0-9fc0d5d47482" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/create_dynamic_inventory_ansible.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/first_start_xray_worker.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/create_database/initial_servers_table" beforeDir="false" afterPath="$PROJECT_DIR$/create_database/initial_servers_table.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/create_dynamic_inventory_ansible.py" beforeDir="false" afterPath="$PROJECT_DIR$/create_dynamic_inventory_ansible.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/initial_new_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/initial_new_server.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/initial_new_servers_list.csv" beforeDir="false" afterPath="$PROJECT_DIR$/initial_new_servers_list.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/logger.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/roles/setup-security/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/roles/setup-security/defaults/main.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/roles/setup-security/handlers/main.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/roles/setup-security/meta/main.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/roles/setup-security/tasks/main.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/roles/setup-security/tests/inventory" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/roles/setup-security/tests/test.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/roles/setup-security/vars/main.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/roles/initial-worker-server/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/roles/initial-worker-server/defaults/main.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/roles/initial-worker-server/handlers/main.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/roles/initial-worker-server/meta/main.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/roles/initial-worker-server/tasks/main.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/roles/initial-worker-server/tests/inventory" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/roles/initial-worker-server/tests/test.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/roles/initial-worker-server/vars/main.yml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
