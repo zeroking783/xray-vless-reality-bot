@@ -9,7 +9,7 @@ def parse_arguments_for_ssh(default_ip=None, default_username="root", default_pa
     logger.info("Start parse arguments")
     parser = argparse.ArgumentParser(description="Example Python script to connect to a server")
 
-    parser.add_argument('--ip', type=str, default="127.0.0.1", help='IP address of the server')
+    parser.add_argument('--ip', type=str, default=argparse"127.0.0.1", help='IP address of the server')
     parser.add_argument('--username', type=str, default="root", help='The user for connect to via ssh')
     parser.add_argument('--password', type=str, default="password", help='Password for SSH login')
     parser.add_argument('--port', type=int, default="22", help="Port for SSH login")
