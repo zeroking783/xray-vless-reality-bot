@@ -70,6 +70,7 @@ for row in rows:
     try:
         server_data = row[1]
         server_data["id"] = row[0]
+        server_data["ansible_port"] = 2200
         base_dynamic_inventory["_meta"]["hostvars"][inventory_hostname] = server_data
         base_dynamic_inventory["xray-workers"]["hosts"].append(inventory_hostname)
         logger.info(f"Новый сервер {inventory_hostname} с ip {server_data["ansible_host"]} "
