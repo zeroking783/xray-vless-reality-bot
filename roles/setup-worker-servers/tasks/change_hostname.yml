@@ -1,0 +1,30 @@
+- name: Define new hostname as variable
+  ansible.builtin.set_fact:
+    new_hostname: "server-{{ id }}"
+
+- name: Change hostname with shell command
+  ansible.builtin.shell:
+    cmd: "hostnamectl set-hostname {{ new_hostname }}"
+
+- name: Restart SSH service
+  ansible.builtin.service:
+    name: "systemd-hostnamed"
+    state: restarted
+
+- name: Register current username
+  ansible.builtin.command:
+    cmd: "hostname"
+  register: current_hostname
+
+- name: Define current hostname as variable
+  ansible.builtin.set_fact:
+    current_hostname: "{{ current_hostname.stdout }}"
+
+- name: Debug current hostname
+  ansible.builtin.debug:
+    msg: "Current hostname: {{ current_hostname }}"
+
+- name: Stop if hostname has not changed
+  ansible.builtin.fail:
+    msg: "hostname not changed"
+  when: current_hostname != new_hostname
