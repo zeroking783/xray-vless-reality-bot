@@ -16,22 +16,6 @@
       - python3-venv
     state: present
 
-- name: Save root password
-  ansible.builtin.set_fact:
-    root_password: "{{ ansible_password }}"
-
-- name: Debug
-  ansible.builtin.debug:
-    msg: "{{ root_password }}"
-
-- name: Generate root password
-  ansible.builtin.set_fact:
-    new_root_password: "{{ lookup('password', '/dev/null', length=20, chars=['ascii_letters', 'digits', 'punctuation']) }}"
-
-- name: Debug root password
-  ansible.builtin.debug:
-    msg: "new root password {{ new_root_password }}"
-
 - name: Create virtualenv for python for basic commands
   ansible.builtin.command:
     cmd: python3 -m venv {{ venv_directory }}
@@ -40,105 +24,40 @@
   ansible.builtin.pip:
     name: passlib
     virtualenv: "{{ venv_directory }}"
-    state: latest
+    state: present
 
-- name: Hash root password
-  ansible.builtin.command:
-    cmd: "{{ venv_directory }}/bin/python -c 'from passlib.hash import sha512_crypt; print(sha512_crypt.hash(\"{{ new_root_password }}\"))'"
-  register: hashed_password_output
+- name: Change hostname
+  ansible.builtin.include_tasks:
+    file: change_hostname.yml
 
-- name: Set hashed password
+- name: Create xray user
+  ansible.builtin.include_tasks:
+    file: create_xray_user.yml
+
+- name: Change root password block
+  ansible.builtin.include_tasks:
+    file: change_root_password.yml
+
+- name: Change ssh port block
+  ansible.builtin.include_tasks:
+    file: change_ssh_port.yml
+
+- name: Initialize all_servers_data
   ansible.builtin.set_fact:
-    new_hashed_password: "{{ hashed_password_output.stdout }}"
-
-- name: Debug root password
-  ansible.builtin.debug:
-    msg: "hashed password {{ new_hashed_password }}"
-
-- name: Change root password
-  ansible.builtin.user:
-    name: root
-    password: "{{ new_hashed_password }}"
-    update_password: always
-  register: password_change_result
-
-- name: Set flag if password change was successful
-  ansible.builtin.set_fact:
-    root_password: "{{ new_root_password }}"
-  when: password_change_result.changed
+    all_servers_data: {}
 
 - name: Gather information about the server
   ansible.builtin.set_fact:
-    server_data: "{{ {
-      'root_password': root_password
-    } | to_json }}"
+    server_data:
+      root_password: "{{ new_root_password }}"
+      ssh_port: "{{ new_ssh_port }}"
+      current_hostname: "{{ current_hostname }}"
+      xray_password: "{{ new_xray_password }}"
 
-- name: Add server data to the list
+- name: Add current server data to all_servers_data
   ansible.builtin.set_fact:
-    all_servers_data: "{{ all_servers_data | default([]) + [server_data] }}"
+    all_servers_data: "{{ all_servers_data | combine({inventory_hostname: server_data}) }}"
 
-- name: debag all_servers_data
+- name: Debug all_servers_data (on the last host only)
   ansible.builtin.debug:
-    msg: "all_servers_data: {{ all_servers_data }}"
-
-- name: Generate new port
-  ansible.builtin.set_fact:
-    new_port: "{{ 65000 | random(start=30000) }}"
-
-- name: Debug new port
-  ansible.builtin.debug:
-    msg: "{{ new_port }}"
-
-- name: Get stats of a ssh.socket
-  ansible.builtin.stat:
-    path: /lib/systemd/system/ssh.socket
-  register: stat_ssh_socket
-
-- name: Create folder for ssh socket if it does not exist
-  ansible.builtin.file:
-    path: /lib/systemd/system/ssh.socket
-    state: file
-    recurse: true
-  when: stat_ssh_socket.stat.exists is false
-
-- name: Create config file
-  ansible.builtin.copy:
-    dest: /lib/systemd/system/ssh.socket
-    content: |
-      [Socket]
-      ListenStream={{ new_port }}
-  when: stat_ssh_socket.stat.exists is false
-
-- name: Edit ssh.socket if exist
-  ansible.builtin.lineinfile:
-    path: /lib/systemd/system/ssh.socket
-    regexp: "^ListenStream"
-    line: ListenStream={{ new_port }}
-  when: stat_ssh_socket.stat.exists is true
-
-- name: Reload systemd manager
-  systemd:
-    daemon_reload: yes
-
-- name: Edit sshd_config
-  ansible.builtin.lineinfile:
-    path: /etc/ssh/sshd_config
-    regexp: "^Port"
-    line: Port {{ new_port }}
-
-- name: Restart SSH service
-  ansible.builtin.service:
-    name: "ssh"
-    state: restarted
-
-- name: Allow all access to tcp new port
-  community.general.ufw:
-    rule: allow
-    port: "{{ new_port }}"
-    proto: tcp
-
-- name: Deny all access to port 22
-  community.general.ufw:
-    rule: deny
-    port: '22'
-    proto: tcp
+    msg: "{{ all_servers_data }}"
