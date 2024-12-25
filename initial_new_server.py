@@ -46,10 +46,11 @@ except Exception as e:
 logger.debug("Открываю .csv файл с данными серверов")
 with open("initial_new_servers_list.csv", newline='') as csvfile:
     csvreader = csv.reader(csvfile, delimiter=';')
-    for ip, password in csvreader:
+    for ip, port, password in csvreader:
 
         server_data = {
             "ansible_host": ip,
+            "ansible_port": port,
             "ansible_user": "root",
             "ansible_password": password
         }
