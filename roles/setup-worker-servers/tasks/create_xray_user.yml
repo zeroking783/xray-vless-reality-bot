@@ -1,0 +1,24 @@
+- name: Generate new password for user xray
+  ansible.builtin.set_fact:
+    new_xray_password: "{{ lookup('password', '/dev/null', length=20, chars=['ascii_letters', 'digits', 'punctuation']) }}"
+
+- name: Debug xray password
+  ansible.builtin.debug:
+    msg: "new xray password {{ new_xray_password }}"
+
+- name: Hash xray password
+  ansible.builtin.command:
+    cmd: "{{ venv_directory }}/bin/python -c 'from passlib.hash import sha512_crypt; print(sha512_crypt.hash(\"{{ new_xray_password }}\"))'"
+  register: hashed_password_output
+
+- name: Set hashed password
+  ansible.builtin.set_fact:
+    new_hashed_password: "{{ hashed_password_output.stdout }}"
+
+- name: Create new user xray with password and generate ssh key
+  ansible.builtin.user:
+    name: xray
+    password: "{{ new_hashed_password }}"
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_file: .ssh/server-{{ id }}
