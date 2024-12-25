@@ -1,6 +1,6 @@
 - name: first_start_worker
   hosts: xray-workers
-  become: true
+#  become: true
 #  vars:
 #    ansible_python_interpreter: /home/bakvivas/Documents/Projects/xray-vless-reality-bot/.venv/bin/python3
   vars_files:
