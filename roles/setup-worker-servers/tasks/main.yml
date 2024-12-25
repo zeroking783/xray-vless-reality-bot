@@ -3,10 +3,10 @@
 # tasks file for initial-worker-server
 
 
-#- name: Update all packages to their latest version
-#  ansible.builtin.apt:
-#    name: "*"
-#    state: latest
+- name: Update all packages to their latest version
+  ansible.builtin.apt:
+    name: "*"
+    state: latest
 
 - name: Install requirements packages
   ansible.builtin.apt:
@@ -54,10 +54,52 @@
       current_hostname: "{{ current_hostname }}"
       xray_password: "{{ new_xray_password }}"
 
-- name: Add current server data to all_servers_data
+- name: Collect data from all servers into a shared variable on the control node
+  delegate_to: localhost
+  run_once: true
   ansible.builtin.set_fact:
-    all_servers_data: "{{ all_servers_data | combine({inventory_hostname: server_data}) }}"
+    all_servers_data: "{{ all_servers_data | default({}) | combine({inventory_hostname: server_data}) }}"
 
-- name: Debug all_servers_data (on the last host only)
-  ansible.builtin.debug:
-    msg: "{{ all_servers_data }}"
+- name: Append data from other hosts
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.set_fact:
+    all_servers_data: "{{ all_servers_data | combine({item: hostvars[item].server_data | default({})}) }}"
+  loop: "{{ ansible_play_hosts }}"
+  vars:
+    item: "{{ inventory_hostname }}"
+
+- name: Save all servers data to a JSON file on the control node
+  run_once: true
+  delegate_to: localhost
+  copy:
+    content: "{{ all_servers_data | to_nice_json }}"
+    dest: "/home/bakvivas/Documents/Projects/xray-vless-reality-bot/test.json"
+
+#
+#- name: Add current server data to all_servers_data
+#  ansible.builtin.set_fact:
+#    all_servers_data: "{{ all_servers_data | combine({inventory_hostname: server_data}) }}"
+#
+#- name: Debug all_servers_data (on the last host only)
+#  ansible.builtin.debug:
+#    msg: "{{ all_servers_data | to_nice_json}}"
+#
+#- name: Collect data from all servers
+#  run_once: yes
+#  delegate_to: localhost
+#  ansible.builtin.set_fact:
+#    all_servers_data: "{{ hostvars | dict2items | selectattr('value.aggregated_data', 'defined') | map(attribute='value.aggregated_data') | list }}"
+#
+#- name: Debug all_servers_data (on the last host only)
+#  run_once: yes
+#  delegate_to: localhost
+#  ansible.builtin.debug:
+#    msg: "{{ all_servers_data | to_nice_json }}"
+#
+#- name: Save all servers data to a JSON file
+#  run_once: yes
+#  delegate_to: localhost
+#  copy:
+#    content: "{{ all_servers_data | to_nice_json }}"
+#    dest: "/home/bakvivas/Documents/Projects/xray-vless-reality-bot/test.json"
