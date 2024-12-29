@@ -7,3 +7,4 @@
     - secrets.yml
   roles:
     - setup-worker-servers
+    - xray-server
