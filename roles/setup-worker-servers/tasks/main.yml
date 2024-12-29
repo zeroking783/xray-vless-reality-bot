@@ -31,7 +31,6 @@
     name:
       - passlib
       - cryptography
-      - jmespath
     virtualenv: "{{ venv_directory }}"
     state: present
 
