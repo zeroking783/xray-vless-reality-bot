@@ -1,0 +1,45 @@
+- name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
+  community.crypto.openssh_keypair:
+    path: "/home/bakvivas/.ssh/{{ new_hostname }}"
+    size: 4096
+  with_inventory_hostnames: all
+  delegate_to: localhost
+
+- name: Ensure .ssh directory exists
+  file:
+    path: "/home/xray/.ssh"
+    state: directory
+    owner: xray
+    mode: '0700'
+
+- name: Copy public ssh key from local server on remote in authorized_keys
+  ansible.builtin.copy:
+    src: "/home/bakvivas/.ssh/{{ new_hostname }}.pub"
+    dest: /home/xray/.ssh/authorized_keys
+    owner: xray
+    mode: '0600'
+  become: yes
+  with_inventory_hostnames: all
+
+- name: Change PubkeyAuthentication on yes
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^PubkeyAuthentication"
+    line: PubkeyAuthentication yes
+
+- name: Change AuthorizedKeysFile
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^AuthorizedKeysFile"
+    line: AuthorizedKeysFile .ssh/authorized_keys
+
+- name: Change PasswordAuthentication on no
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^PasswordAuthentication"
+    line: PasswordAuthentication no
+
+- name: Restart SSH service
+  ansible.builtin.service:
+    name: "ssh"
+    state: restarted
