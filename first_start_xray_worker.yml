@@ -8,3 +8,4 @@
   roles:
     - setup-worker-servers
     - xray-server
+    - stub-sites
