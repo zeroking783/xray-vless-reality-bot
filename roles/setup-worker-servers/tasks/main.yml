@@ -3,10 +3,10 @@
 # tasks file for initial-worker-server
 
 
-- name: Update all packages to their latest version
-  ansible.builtin.apt:
-    name: "*"
-    state: latest
+- name: Update and upgrade apt packages
+  apt:
+    update_cache: yes
+    upgrade: yes
 
 - name: Install requirements packages
   ansible.builtin.apt:
@@ -16,15 +16,28 @@
       - python3-venv
     state: present
 
+- name: Install jq if not present
+  ansible.builtin.apt:
+    name: jq
+    state: present
+  when: ansible_facts.packages['jq'] is not defined
+
 - name: Create virtualenv for python for basic commands
   ansible.builtin.command:
     cmd: python3 -m venv {{ venv_directory }}
 
 - name: Install passlib in the virtual environment
   ansible.builtin.pip:
-    name: passlib
+    name:
+      - passlib
+      - cryptography
+      - jmespath
     virtualenv: "{{ venv_directory }}"
     state: present
+
+- name: Set ansible_python_interpreter to virtualenv python
+  ansible.builtin.set_fact:
+    ansible_python_interpreter: "{{ venv_directory }}/bin/python"
 
 - name: Change hostname
   ansible.builtin.include_tasks:
