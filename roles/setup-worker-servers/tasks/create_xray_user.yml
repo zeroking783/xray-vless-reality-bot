@@ -1,6 +1,6 @@
 - name: Generate new password for user xray
   ansible.builtin.set_fact:
-    new_xray_password: "{{ lookup('password', '/dev/null', length=20, chars=['ascii_letters', 'digits', 'punctuation']) }}"
+    new_xray_password: "{{ lookup('ansible.builtin.password', '/dev/null', length=20, chars=['ascii_letters', 'digits', '!@#$%^&*()-_=+[]{};:,.<>/?']) }}"
 
 - name: Debug xray password
   ansible.builtin.debug:
