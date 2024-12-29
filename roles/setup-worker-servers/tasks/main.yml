@@ -42,6 +42,10 @@
   ansible.builtin.include_tasks:
     file: change_ssh_port.yml
 
+- name: Generate ssh key and save
+  ansible.builtin.include_tasks:
+    file: create_ssh_connect.yml
+
 - name: Initialize all_servers_data
   ansible.builtin.set_fact:
     all_servers_data: {}
@@ -75,31 +79,3 @@
   copy:
     content: "{{ all_servers_data | to_nice_json }}"
     dest: "/home/bakvivas/Documents/Projects/xray-vless-reality-bot/test.json"
-
-#
-#- name: Add current server data to all_servers_data
-#  ansible.builtin.set_fact:
-#    all_servers_data: "{{ all_servers_data | combine({inventory_hostname: server_data}) }}"
-#
-#- name: Debug all_servers_data (on the last host only)
-#  ansible.builtin.debug:
-#    msg: "{{ all_servers_data | to_nice_json}}"
-#
-#- name: Collect data from all servers
-#  run_once: yes
-#  delegate_to: localhost
-#  ansible.builtin.set_fact:
-#    all_servers_data: "{{ hostvars | dict2items | selectattr('value.aggregated_data', 'defined') | map(attribute='value.aggregated_data') | list }}"
-#
-#- name: Debug all_servers_data (on the last host only)
-#  run_once: yes
-#  delegate_to: localhost
-#  ansible.builtin.debug:
-#    msg: "{{ all_servers_data | to_nice_json }}"
-#
-#- name: Save all servers data to a JSON file
-#  run_once: yes
-#  delegate_to: localhost
-#  copy:
-#    content: "{{ all_servers_data | to_nice_json }}"
-#    dest: "/home/bakvivas/Documents/Projects/xray-vless-reality-bot/test.json"
