@@ -4,4 +4,3 @@
 
 - name: Install xray on server
   include_tasks: install.yml
-  when: xray_action == "install"
