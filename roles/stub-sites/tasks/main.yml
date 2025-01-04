@@ -66,7 +66,7 @@
 
 - name: Debug country code (for verification)
   ansible.builtin.debug:
-    msg: "Detected country code: {{ country_code.stdout }}"
+    msg: "Detected country code: {{ country_code | default('Not Set') }}"
 
 - name: Define supported countries
   ansible.builtin.set_fact:
@@ -75,7 +75,7 @@
 - name: Set default country code if not found
   ansible.builtin.set_fact:
     country_code: "US"
-  when: country_code.stdout not in supported_countries
+  when: country_code not in supported_countries
 
 - name: Copy country-specific site to the server
   ansible.builtin.copy:
