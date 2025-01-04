@@ -1,3 +1,4 @@
+import os
 import subprocess
 import logging
 import sys
@@ -101,6 +102,28 @@ def configure_xray_config(private_key, public_key, short_ids, path_file):
         logging.error(f"Не удалось сохранить измененный {path_file}")
 
 
+def get_xray_config_version(path_file):
+    try:
+        logging.debug(f"Открываю json файл {path_file} с версией конфига")
+        with open(path_file, 'r') as file:
+            data = json.load(file)
+        logging.info(f"Json файл {path_file} с версией конфига открыт")
+    except Exception as e:
+        logging.error(f"Не удалось открыть файл {path_file} с версией конфигурации xray")
+
+    try:
+        logging.debug(f"Считываю версию конфига xray {path_file}")
+        version = data.get("version")
+        logging.info(f"Версия конфига {path_file} считана")
+    except Exception as e:
+        logging.error(f"Не удалось считать версию конфига xray {path_file}")
+
+    return version
+
 private_key, public_key = get_key()
 short_ids = get_shortids()
 configure_xray_config(private_key, public_key, short_ids, "/etc/xray/confs/inbound.json")
+
+version_xray_config = get_xray_config_version(path_file)
+print(version_xray_config)
+os.environ["XRAY_CONFIG"] = version_xray_config
