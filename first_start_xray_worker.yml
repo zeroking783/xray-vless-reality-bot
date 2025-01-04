@@ -6,6 +6,6 @@
   vars_files:
     - secrets.yml
   roles:
-    - setup-worker-servers
+#    - setup-worker-servers
+#    - stub-sites
     - xray-server
-    - stub-sites
