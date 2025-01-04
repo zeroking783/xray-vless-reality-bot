@@ -1,0 +1,12 @@
+{
+  "outbounds":[
+    {
+      "tag":"direct-out",
+      "protocol":"freedom"
+    },
+    {
+      "tag":"block",
+      "protocol":"blackhole"
+    }
+  ]
+}
