@@ -122,7 +122,7 @@ def get_xray_config_version(path_file):
 
 private_key, public_key = get_key()
 short_ids = get_shortids()
-configure_xray_config(private_key, public_key, short_ids, "/etc/xray/confs/inbound.json")
+configure_xray_config(private_key, public_key, short_ids, "/etc/xray/confs/inbounds.json")
 
 version_xray_config = get_xray_config_version(path_file)
 print(version_xray_config)
