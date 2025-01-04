@@ -73,100 +73,34 @@ def get_shortids():
 
 
 # Configuring basic json
-def create_start_xray_config(private_key, public_key, short_ids):
+def configure_xray_config(private_key, public_key, short_ids, path_file):
+    try:
+        logging.debug(f"Открываю конфигурационный json файл {path_file}")
+        with open(path_file, 'r') as file:
+            data = json.load(file)
+        logging.info(f"Конфигурационный json файл {path_file} открыт")
+    except Exception as e:
+        logging.error(f"Не удалось открыть файл {path_file} конфигурации xray")
 
-    xray_config_base = {
-        "log": {"loglevel": "info"},
-        "routing": {"rules": [],
-                    "domainStrategy": "AsIs"},
-        "inbounds": [{"port": 443,
-                      "protocol": "vless",
-                      "tag": "vless_tls",
-                      "settings": {
-                          "clients": [],
-                          "decryption": "none"
-                      },
-                      "streamSettings": {
-                          "network": "tcp",
-                          "security": "reality",
-                          "realitySettings": {
-                              "show": False,
-                              "dest": "www.yahoo.com:443",
-                              "xver": 0,
-                              "serverNames": ["www.yahoo.com"],
-                              "privateKey": private_key,
-                              "publicKey": public_key,
-                              "minClientVer": "",
-                              "maxClientVer": "",
-                              "maxTimeDiff": 0,
-                              "shortIds": [short_ids]}
-                          },
-                      "sniffing": {
-                          "enabled": True,
-                          "destOverride": ["http", "tls"]
-                      }
-                  }
-              ],
-        "outbounds": [
-            {"protocol": "freedom",
-             "tag": "direct"},
-            {"protocol": "blackhole",
-             "tag": "block"}
-        ]
-    }
+    logging.info(f"Начинаю изменять данные в файле конфигурации xray {path_file}")
+    try:
+        logging.debug(f"Изменяю данные в конфигурационном файле {path_file}")
+        data["privateKey"] = private_key
+        data["publicKey"] = public_key
+        data["shortIds"] = [short_ids]
+        logging.info(f"Конфигурационные данные в файле json {path_file} успешно изменены")
+    except Exception as e:
+        logging.error(f"Не удалось изменить данные в json {path_file}")
 
     try:
-        xray_config_base_json = json.dumps(xray_config_base, sort_keys=True, indent=4)
+        logging.debug(f"Начинаю сохранять измененный {path_file}")
+        with open(file_path, 'w') as file:
+            json.dump(data, file, indent=4)
+        logging.info(f"Измененный {path_file} успешно сохранен")
     except Exception as e:
-        logging.error(f"Failed to build initial xray configuration: \n{e}")
-
-    logging.info("Initial xray configuration successfully compiled into json")
-
-    return xray_config_base_json
-
-
-def save_information_in_file(directory, name_file, information, create_directory=False, sftp_client=None):
-    full_path = pathlib.Path(directory) / name_file
-
-    if create_directory:
-        logging.info(f"Start create directory {directory}")
-        try:
-            full_path.parent.mkdir(parents=True, exist_ok=True)
-        except PermissionError as e:
-            logging.error(f"Insufficient permissions to create directory {directory}: \n{e}")
-        except Exception as e:
-            logging.error(f"Unexpected error creating directory {directory}: \n{e}")
-        logging.info(f"Directory {directory} is present/created")
-
-    if sftp_client is not None:
-        logging.info(f"I start writing to file {full_path} on the remote server")
-        try:
-            with sftp_client.open(str(full_path), 'w') as file:
-                file.write(information)
-        except PermissionError as e:
-            logging.error(f"Insufficient permissions to write to file {full_path}: \n{e}")
-        except Exception as e:
-            logging.error(f"Unexpected error writing to file {full_path}: \n{e}")
-        logging.info(f"{full_path} successfully written")
-    else:
-        try:
-            with open(full_path, "w") as file:
-                file.write(information)
-        except PermissionError as e:
-            logging.error(f"Insufficient permissions to write to file {full_path}: \n{e}")
-        except Exception as e:
-            logging.error(f"Unexpected error writing to file {full_path}: \n{e}")
-        logging.info(f"{full_path} successfully written")
+        logging.error(f"Не удалось сохранить измененный {path_file}")
 
 
 private_key, public_key = get_key()
 short_ids = get_shortids()
-xray_config_base_json = create_start_xray_config(private_key, public_key, short_ids)
-save_information_in_file("/usr/local/etc/xray", "config.json", xray_config_base_json, True)
-
-
-
-
-
-
-
+configure_xray_config(private_key, public_key, short_ids, "/etc/xray/confs/inbound.json")
