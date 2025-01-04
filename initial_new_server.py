@@ -13,7 +13,7 @@ db_name = os.getenv("DB_INIT_NAME")
 db_user = os.getenv("DB_INIT_USER")
 db_password = os.getenv("DB_INIT_PASSWORD")
 
-query_insert_new_server = """
+query_insert_new_server git= """
     INSERT INTO servers.initial (connect_data) VALUES (%s);
 """
 
