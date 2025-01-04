@@ -27,7 +27,6 @@ query_update_old_server = """
     SET connect_data = %s, processed = False
     WHERE connect_data ->> 'ansible_host' = %s;
 """
-
 logger.info(f"Пытаюсь подключиться к базе данных {db_name}")
 try:
     conn = psycopg2.connect(
