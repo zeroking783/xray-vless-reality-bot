@@ -44,7 +44,7 @@
 
 - name: Install xray
   ansible.builtin.command:
-    cmd: /home/xray/xray_worker/install-release.sh install --version {{ XRAY_VERSION_INSTALL }}
+    cmd: /home/xray/xray_worker/install-release.sh install --version {{ xray_version_install }}
   when: xray_version == ''
 
 - name: Ensure XRAY_VERSION is correctly set in /etc/environment
@@ -52,9 +52,33 @@
     path: "/etc/environment"
     state: present
     regexp: "^XRAY_VERSION="
-    line: "XRAY_VERSION={{ XRAY_VERSION_INSTALL }}"
+    line: "XRAY_VERSION={{ xray_version_install }}"
     create: yes
   when: xray_version == ''
+
+- name: Create directory for confs on remote servers
+  ansible.builtin.file:
+    path: "{{ xray_config_path }}"
+    state: directory
+    recurse: yes
+    mode: "0755"
+
+- name: Get real path to last version config xray
+  command: "readlink -f {{ xray_latest_config_path_symlink }}"
+  register: symlink_target
+  delegate_to: localhost
+
+- name: Debug real path symlink
+  ansible.builtin.debug:
+    msg: "Symlink path: {{ symlink_target.stdout }}"
+
+- name: Copy last version configure xray files from main server
+  ansible.builtin.copy:
+    src: "{{ symlink_target.stdout }}/"
+    dest: "{{ xray_config_path }}"
+#    owner: "xray"
+#    group: "xray"
+    mode: "0755"
 
 - name: Download script create_start_json_config.py
   ansible.builtin.get_url:
@@ -63,7 +87,7 @@
     mode: '0755'
   when: xray_config == ''
 
-- name: Perform basic configuration /usr/local/etc/xray/config.json
+- name: Perform basic configuration /etc/xray/confs/
   ansible.builtin.shell:
     cmd: python3 /home/xray/xray_worker/create_start_json_config.py
   when: xray_config == ''
