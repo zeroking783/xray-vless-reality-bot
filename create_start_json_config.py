@@ -122,8 +122,8 @@ def get_xray_config_version(path_file):
 
 private_key, public_key = get_key()
 short_ids = get_shortids()
-configure_xray_config(private_key, public_key, short_ids, "/etc/xray/confs/inbounds.json")
+configure_xray_config(private_key, public_key, short_ids, "/home/xray/confs/inbounds.json")
 
-version_xray_config = get_xray_config_version(path_file)
+version_xray_config = get_xray_config_version(/home/xray/confs/version.json)
 print(version_xray_config)
 os.environ["XRAY_CONFIG"] = version_xray_config
