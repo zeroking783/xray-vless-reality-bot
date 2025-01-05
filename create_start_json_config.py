@@ -95,7 +95,7 @@ def configure_xray_config(private_key, public_key, short_ids, path_file):
 
     try:
         logging.debug(f"Начинаю сохранять измененный {path_file}")
-        with open(file_path, 'w') as file:
+        with open(path_file, 'w') as file:
             json.dump(data, file, indent=4)
         logging.info(f"Измененный {path_file} успешно сохранен")
     except Exception as e:
