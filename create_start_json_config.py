@@ -86,9 +86,9 @@ def configure_xray_config(private_key, public_key, short_ids, path_file):
     logging.info(f"Начинаю изменять данные в файле конфигурации xray {path_file}")
     try:
         logging.debug(f"Изменяю данные в конфигурационном файле {path_file}")
-        data["privateKey"] = private_key
-        data["publicKey"] = public_key
-        data["shortIds"] = [short_ids]
+        data["inbounds"]["streamSettings"]["privateKey"] = private_key
+        data["inbounds"]["streamSettings"]["publicKey"] = public_key
+        data["inbounds"]["streamSettings"]["shortIds"] = [short_ids]
         logging.info(f"Конфигурационные данные в файле json {path_file} успешно изменены")
     except Exception as e:
         logging.error(f"Не удалось изменить данные в json {path_file}")
