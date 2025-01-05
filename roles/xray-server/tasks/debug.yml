@@ -1,0 +1,64 @@
+- name: Create directory for scripts
+  ansible.builtin.file:
+    path: "{{ xray_scripts_path }}"
+    state: directory
+    recurse: yes
+    mode: '0755'
+
+- name: Create directory for confs
+  ansible.builtin.file:
+    path: "{{ xray_config_path }}"
+    state: directory
+    recurse: yes
+    mode: "0755"
+
+- name: Download xray
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/XTLS/Xray-install/046d9aa2432b3a6241d73c3684ef4e512974b594/install-release.sh
+    dest: "{{ xray_scripts_path }}/install-release.sh"
+    mode: '0755'
+
+- name: Install xray
+  ansible.builtin.command:
+    cmd: "{{ xray_scripts_path }}/install-release.sh install --version {{ xray_version_install }}"
+
+- name: Ensure XRAY_VERSION is correctly set in /etc/environment
+  ansible.builtin.lineinfile:
+    path: "/etc/environment"
+    state: present
+    regexp: "^XRAY_VERSION="
+    line: "XRAY_VERSION={{ xray_version_install }}"
+    create: yes
+
+- name: Get real path to last version config xray
+  ansible.builtin.command: 
+    cmd: "readlink -f {{ xray_latest_config_path_symlink }}"
+  register: symlink_target
+  delegate_to: localhost
+
+- name: Copy last version configure xray files from main server
+  ansible.builtin.copy:
+    src: "{{ symlink_target.stdout }}/"
+    dest: "{{ xray_config_path }}"
+    # owner: "xray"
+    # group: "xray"
+    mode: "0755"
+
+- name: Download script create_start_json_config.py
+  ansible.builtin.get_url:
+    url: https://gitlab.com/zeroking783/xray-vless-reality-bot/-/raw/main/create_start_json_config.py
+    dest: "{{ xray_scripts_path }}/create_start_json_config.py"
+    mode: '0755'
+
+- name: Perform basic configuration /home/xray/confs
+  ansible.builtin.command:
+    cmd: "python3 {{ xray_scripts_path }}/create_start_json_config.py"
+
+- name: Restart Xray with specific 
+  ansible.builtin.command:
+    cmd: "xray run -confdir /etc/xray/confs"
+
+- name: Enabled xray service
+  ansible.builtin.service:
+    name: xray
+    enabled: true
