@@ -4,4 +4,5 @@
 
 xray_version_install: 1.8.1
 xray_latest_config_path_symlink: "/home/bakvivas/Documents/Projects/xray-vless-reality-bot/xray_configs/latest"
-xray_config_path: "/etc/xray/confs/"
+xray_config_path: "/home/xray/confs"
+xray_scripts_path: /home/xray/scripts
