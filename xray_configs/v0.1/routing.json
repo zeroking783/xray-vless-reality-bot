@@ -25,9 +25,7 @@
         "type":"field",
         "ip":[
           "geoip:ru",
-          "geoip:private",
-          "geosite:ru",
-          "geosite:private"
+          "geoip:private"
         ],
         "outboundTag":"direct"
       },
