@@ -1,0 +1,118 @@
+### INSTALL XRAY ON SERVER ###
+
+# - name: Ensure XRAY_VERSION is defined
+#   ansible.builtin.set_fact:
+#     xray_version: "{{ ansible_env.XRAY_VERSION | default('') }}"
+
+# - name: Ensure XRAY_CONFIG is defined
+#   ansible.builtin.set_fact:
+#     xray_config: "{{ ansible_env.XRAY_CONFIG | default('') }}"
+
+# - name: Debug version xray
+#   ansible.builtin.debug:
+#     msg: xray version {{ xray_version }} on server {{ inventory_hostname }}
+#   when: xray_version != ''
+
+# - name: Debug availability xray
+#   ansible.builtin.debug:
+#     msg: xray not installed on server {{ inventory_hostname }}
+#   when: xray_version == ''
+
+# - name: Debug version config for xray
+#   ansible.builtin.debug:
+#     msg: xray config version {{ xray_config }} on server {{ inventory_hostname }}
+#   when: xray_config != ''
+
+# - name: Debug availability xray config
+#   ansible.builtin.debug:
+#     msg: xray config is not installed on the server {{ inventory_hostname }}
+#   when: xray_config == ''
+
+- name: Create project directory
+  ansible.builtin.file:
+    path: "/home/xray/scripts"
+    state: directory
+    mode: '0755'
+  # when: xray_version == ''
+
+- name: Debug xray_scripts_path
+  ansible.builtin.debug:
+    msg: "{{ xray_scripts_path }}"
+
+- name: Create project directory
+  ansible.builtin.file:
+    path: "{{ xray_scripts_path }}"
+    state: directory
+    mode: '0755'
+  # when: xray_version == ''
+
+# - name: Download xray
+#   ansible.builtin.get_url:
+#     url: https://raw.githubusercontent.com/XTLS/Xray-install/046d9aa2432b3a6241d73c3684ef4e512974b594/install-release.sh
+#     dest: "{{ xray_scripts_path }}/install-release.sh"
+#     mode: '0755'
+#   # when: xray_version == ''
+
+# - name: Install xray
+#   ansible.builtin.command:
+#     cmd: "{{ xray_scripts_path }}/install-release.sh install --version {{ xray_version_install }}"
+#   # when: xray_version == ''
+
+# - name: Ensure XRAY_VERSION is correctly set in /etc/environment
+#   ansible.builtin.lineinfile:
+#     path: "/etc/environment"
+#     state: present
+#     regexp: "^XRAY_VERSION="
+#     line: "XRAY_VERSION={{ xray_version_install }}"
+#     create: yes
+#   # when: xray_version == ''
+
+# - name: Create directory for confs on remote servers
+#   ansible.builtin.file:
+#     path: "{{ xray_config_path }}"
+#     state: directory
+#     recurse: yes
+#     mode: "0755"
+
+# - name: Get real path to last version config xray
+#   ansible.builtin.command: 
+#     cmd: "readlink -f {{ xray_latest_config_path_symlink }}"
+#   register: symlink_target
+#   delegate_to: localhost
+
+# - name: Debug real path symlink
+#   ansible.builtin.debug:
+#     msg: "Symlink path: {{ symlink_target.stdout }}"
+
+# - name: Copy last version configure xray files from main server
+#   ansible.builtin.copy:
+#     src: "{{ symlink_target.stdout }}/"
+#     dest: "{{ xray_config_path }}"
+# #    owner: "xray"
+# #    group: "xray"
+#     mode: "0755"
+
+# - name: Download script create_start_json_config.py
+#   ansible.builtin.get_url:
+#     url: https://gitlab.com/zeroking783/xray-vless-reality-bot/-/raw/main/create_start_json_config.py
+#     dest: "{{ xray_scripts_path }}/create_start_json_config.py"
+#     mode: '0755'
+#   # when: xray_config == ''
+
+# - name: Perform basic configuration /home/xray/confs
+#   ansible.builtin.command:
+#     cmd: "python3 {{ xray_scripts_path }}/create_start_json_config.py"
+#   # when: xray_config == ''
+
+# # - name: Ensure XRAY_CONFIG is correctly set in /etc/environment
+# #   ansible.builtin.lineinfile:
+# #     path: "/etc/environment"
+# #     state: present
+# #     regexp: "^XRAY_CONFIG="
+# #     line: "XRAY_CONFIG={{ XRAY_CONFIG_INSTALL }}"
+# #     create: yes
+# #   when: xray_config == ''
+
+
+
+    
