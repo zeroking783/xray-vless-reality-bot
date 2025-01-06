@@ -3,4 +3,4 @@
 # tasks file for xray-server
 
 - name: Install xray on server
-  include_tasks: debug.yml
+  include_tasks: install.yml
