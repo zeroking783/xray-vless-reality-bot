@@ -127,3 +127,4 @@ configure_xray_config(private_key, public_key, short_ids, "/home/xray/confs/inbo
 version_xray_config = get_xray_config_version("/home/xray/confs/version.json")
 print(version_xray_config)
 os.environ["XRAY_CONFIG"] = version_xray_config
+os.system[f"export XRAY_CONFIG={version_xray_config}"]
