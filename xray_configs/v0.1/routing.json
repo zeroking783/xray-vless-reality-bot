@@ -16,6 +16,13 @@
       },
       {
         "type":"field",
+        "protocol":[
+          "bittorrent"
+        ],
+        "outboundTag":"direct"
+      },
+      {
+        "type":"field",
         "domain":[
           "geosite:category-ads-all"
         ],
@@ -27,7 +34,7 @@
           "geoip:ru",
           "geoip:private"
         ],
-        "outboundTag":"direct"
+        "outboundTag":"direct-out"
       },
       {
         "type":"field",
@@ -36,7 +43,7 @@
           "vk.com",
           "livejournal.com"
         ],
-        "outboundTag":"direct"
+        "outboundTag":"direct-out"
       },
       {
         "type":"field",
@@ -44,7 +51,7 @@
           "ru",
           "su"
         ],
-        "outboundTag":"direct"
+        "outboundTag":"direct-out"
       }
     ]
   }
