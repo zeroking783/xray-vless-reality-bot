@@ -1,8 +1,14 @@
 {
     "server-39": {
         "current_hostname": "server-39",
-        "root_password": "mSSDomk_9W+D?<ciF]hQ",
-        "ssh_port": "60367",
-        "xray_password": "Mz*Pcpmo3;P}_N-D-dFg"
+        "root_password": "b=wXqvcm(bRPAA#v8.iL",
+        "ssh_port": "58330",
+        "xray_password": "<EL;i2!50/EFEB5N&oUd"
+    },
+    "server-40": {
+        "current_hostname": "server-40",
+        "root_password": "9(6S&#z*jRCp%d;NWmT?",
+        "ssh_port": "53214",
+        "xray_password": "#d34;>#8}FIiD(8l2kFX"
     }
 }
