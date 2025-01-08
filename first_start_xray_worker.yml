@@ -7,5 +7,5 @@
     - secrets.yml
   roles:
     - setup-worker-servers
-    # - stub-sites
+    - stub-sites
     - xray-server
