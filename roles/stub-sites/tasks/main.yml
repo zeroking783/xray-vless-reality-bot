@@ -7,26 +7,26 @@
     name: nginx
     state: present
 
-- name: Generate a private key
-  openssl_privatekey:
-    path: /etc/ssl/private/stub_site.pem
-    size: 4096
-    state: present
-    cipher: sha512
+# - name: Generate a private key
+#   openssl_privatekey:
+#     path: /etc/ssl/private/stub_site.pem
+#     size: 4096
+#     state: present
+#     cipher: sha512
 
-- name: Create CSR
-  openssl_csr:
-    path: /etc/ssl/stub_site.csr
-    privatekey_path: /etc/ssl/private/stub_site.pem
+# - name: Create CSR
+#   openssl_csr:
+#     path: /etc/ssl/stub_site.csr
+#     privatekey_path: /etc/ssl/private/stub_site.pem
 
-- name: Generate a Self Signed OpenSSL certificate
-  openssl_certificate:
-    path: /etc/ssl/certs/stub_site.crt
-    privatekey_path: /etc/ssl/private/stub_site.pem
-    csr_path: /etc/ssl/stub_site.csr
-    provider: selfsigned
-    selfsigned_digest: sha512
-    state: present
+# - name: Generate a Self Signed OpenSSL certificate
+#   openssl_certificate:
+#     path: /etc/ssl/certs/stub_site.crt
+#     privatekey_path: /etc/ssl/private/stub_site.pem
+#     csr_path: /etc/ssl/stub_site.csr
+#     provider: selfsigned
+#     selfsigned_digest: sha512
+#     state: present
 
 - name: Copy basic nginx conf on remote server
   ansible.builtin.copy:
@@ -48,10 +48,10 @@
     regexp: "^ *server_name *IP *;"
     line: "server_name {{ ansible_host }};"
 
-- name: Restart nginx to apply changes
-  ansible.builtin.service:
-    name: nginx
-    state: restarted
+# - name: Restart nginx to apply changes
+#   ansible.builtin.service:
+#     name: nginx
+#     state: restarted
 
 #- name: Fetch country information based on IP
 #  ansible.builtin.uri:
@@ -66,7 +66,7 @@
 
 - name: Debug country code (for verification)
   ansible.builtin.debug:
-    msg: "Detected country code: {{ country_code | default('Not Set') }}"
+    msg: "Detected country code: {{ country_code.stdout | default('Not Set') }}"
 
 - name: Define supported countries
   ansible.builtin.set_fact:
@@ -75,11 +75,15 @@
 - name: Set default country code if not found
   ansible.builtin.set_fact:
     country_code: "US"
-  when: country_code not in supported_countries
+  when: country_code.stdout not in supported_countries
+
+- name: Debug country code (for verification)
+  ansible.builtin.debug:
+    msg: "Detected country code: {{ country_code.stdout | default('Not Set') }}"
 
 - name: Copy country-specific site to the server
   ansible.builtin.copy:
-    src: "stub_sites/{{ country_code }}/"
+    src: "stub_sites/{{ country_code.stdout }}/"
     dest: "/var/www/html/"
     owner: www-data
     group: www-data
