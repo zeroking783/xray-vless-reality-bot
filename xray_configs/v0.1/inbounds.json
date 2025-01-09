@@ -1,7 +1,7 @@
 {
   "inbounds":[
     {
-      "port":10000,
+      "port":443,
       "protocol":"vless",
       "settings":{
         "clients":[
@@ -30,7 +30,7 @@
           "maxClientVer":"",
           "maxTimeDiff":0,
           "shortIds":[
-            "short_ids"
+            
           ]
         }
       },
