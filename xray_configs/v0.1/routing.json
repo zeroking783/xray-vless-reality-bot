@@ -19,7 +19,7 @@
         "protocol":[
           "bittorrent"
         ],
-        "outboundTag":"direct"
+        "outboundTag":"block"
       },
       {
         "type":"field",
