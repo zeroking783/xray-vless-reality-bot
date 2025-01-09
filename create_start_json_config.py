@@ -25,7 +25,7 @@ logger.addHandler(handler)
 
 
 # We get private and public keys
-def get_key():
+def get_keys():
     logging.info("I enter the command to get the keys")
     command_get_key = "/usr/local/bin/xray x25519"
     result_command_get_key = subprocess.run(command_get_key, shell=True, capture_output=True, text=True)
@@ -74,7 +74,7 @@ def get_shortids():
 
 
 # Configuring basic json
-def configure_xray_config(private_key, public_key, short_ids, path_file):
+def configure_xray_config_inbounds(private_key, public_key, path_file):
     try:
         logging.debug(f"Открываю конфигурационный json файл {path_file}")
         with open(path_file, 'r') as file:
@@ -88,7 +88,6 @@ def configure_xray_config(private_key, public_key, short_ids, path_file):
         logging.debug(f"Изменяю данные в конфигурационном файле {path_file}")
         data["inbounds"][0]["streamSettings"]["realitySettings"]["privateKey"] = private_key
         data["inbounds"][0]["streamSettings"]["realitySettings"]["publicKey"] = public_key
-        data["inbounds"][0]["streamSettings"]["realitySettings"]["shortIds"] = [short_ids.strip()]
         logging.info(f"Конфигурационные данные в файле json {path_file} успешно изменены")
     except Exception as e:
         logging.error(f"Не удалось изменить данные в json {path_file}")
@@ -120,9 +119,8 @@ def get_xray_config_version(path_file):
 
     return version
 
-private_key, public_key = get_key()
-short_ids = get_shortids()
-configure_xray_config(private_key, public_key, short_ids, "/home/xray/confs/inbounds.json")
+private_key, public_key = get_keys()
+configure_xray_config_inbounds(private_key, public_key, "/home/xray/confs/inbounds.json")
 
 version_xray_config = get_xray_config_version("/home/xray/confs/version.json")
 print(version_xray_config)
