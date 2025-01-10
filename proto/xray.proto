@@ -1,0 +1,15 @@
+syntax = "proto3";
+package xray;
+
+message ClientIdRequest {
+    string name = 1;
+}
+
+message ClientIdentifierResponse {
+    string uuid = 1;
+    string short_ids = 2;
+}
+
+service XrayClientsService {
+    rpc AddClient(ClientIdRequest) returns (ClientIdentifierResponse);
+}
