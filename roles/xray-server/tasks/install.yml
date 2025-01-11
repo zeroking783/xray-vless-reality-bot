@@ -69,7 +69,7 @@
   ansible.builtin.command:
     cmd: "python3 {{ xray_scripts_path }}/create_start_json_config.py"
 
-- name: Fine all xray service systemd
+- name: Find all xray service systemd
   ansible.builtin.find:
     paths: /etc/systemd/system/
     recurse: yes
