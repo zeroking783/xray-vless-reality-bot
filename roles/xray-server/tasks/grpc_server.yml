@@ -1,0 +1,28 @@
+- name: Copy generic grpc code 
+  ansible.builtin.copy:
+    src: "/home/bakvivas/Documents/Projects/xray-vless-reality-bot/xray_pb2.py"
+    dest: "{{ xray_scripts_path }}"
+    owner: "xray"
+    group: "xray"
+    mode: "0755"
+
+- name: Copy generic grpc code 
+  ansible.builtin.copy:
+    src: "/home/bakvivas/Documents/Projects/xray-vless-reality-bot/xray_pb2_grpc.py"
+    dest: "{{ xray_scripts_path }}"
+    owner: "xray"
+    group: "xray"
+    mode: "0755"
+
+- name: Copy worker_client 
+  ansible.builtin.copy:
+    src: "/home/bakvivas/Documents/Projects/xray-vless-reality-bot/worker_client.py"
+    dest: "{{ xray_scripts_path }}"
+    owner: "xray"
+    group: "xray"
+    mode: "0755"
+
+- name: Start worker_client.py
+  ansible.builtin.shell:
+    cmd: "nohup {{ python_interpreter_path }} worker_client.py &"
+    chdir: "{{ xray_scripts_path }}"
