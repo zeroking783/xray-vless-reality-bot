@@ -3,4 +3,13 @@
 # tasks file for xray-server
 
 - name: Install xray on server
-  include_tasks: install.yml
+  ansible.builtin.include_tasks: 
+    file: install.yml
+
+- name: Copy necessary scripts
+  ansible.builtin.include_tasks:
+    file: copy_necessary_scripts.yml
+
+- name: Start grpc server
+  ansible.builtin.include_tasks:
+    file: grpc_server.yml
