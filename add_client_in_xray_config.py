@@ -119,7 +119,9 @@ def add_client(email):
     path = "/home/xray/confs/inbounds.json"
     save_new_config_inbounds_xray(path, xray_config_inbounds_new)
 
-add_client("bakvivas")
+    return uuid, shortids
+
+# add_client("bakvivas")
 
 
 
