@@ -3,3 +3,5 @@
 # defaults file for initial-worker-server
 
 venv_directory: /home/venv
+requirements_file_path: "/home/bakvivas/Documents/Projects/xray-vless-reality-bot/requirements.txt"
+server_venv_path: "/home"
