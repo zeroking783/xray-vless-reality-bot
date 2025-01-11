@@ -7,7 +7,7 @@ message ClientIdRequest {
 
 message ClientIdentifierResponse {
     string uuid = 1;
-    string short_ids = 2;
+    string shortids = 2;
 }
 
 service XrayClientsService {
