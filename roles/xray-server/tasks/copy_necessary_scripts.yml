@@ -1,0 +1,7 @@
+- name: Copy script add client in xray
+  ansible.builtin.copy:
+    src: "/home/bakvivas/Documents/Projects/xray-vless-reality-bot/add_client_in_xray_config.py"
+    dest: "{{ xray_scripts_path }}"
+    owner: xray
+    group: xray
+    mode: '0755'
