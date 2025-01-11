@@ -64,9 +64,13 @@
     curl -s http://ipinfo.io/{{ ansible_host }}/json | jq -r '.country'
   register: country_code
 
+- name: Set country_code variable
+  ansible.builtin.set_fact:
+    country_code: "{{ country_code.stdout }}"
+
 - name: Debug country code (for verification)
   ansible.builtin.debug:
-    msg: "Detected country code: {{ country_code.stdout | default('Not Set') }}"
+    msg: "Detected country code: {{ country_code}}"
 
 - name: Define supported countries
   ansible.builtin.set_fact:
@@ -75,15 +79,15 @@
 - name: Set default country code if not found
   ansible.builtin.set_fact:
     country_code: "US"
-  when: country_code.stdout not in supported_countries
+  when: country_code not in supported_countries
 
 - name: Debug country code (for verification)
   ansible.builtin.debug:
-    msg: "Detected country code: {{ country_code.stdout | default('Not Set') }}"
+    msg: "Detected country code: {{ country_code}}"
 
 - name: Copy country-specific site to the server
   ansible.builtin.copy:
-    src: "stub_sites/{{ country_code.stdout }}/"
+    src: "stub_sites/{{ country_code }}/"
     dest: "/var/www/html/"
     owner: www-data
     group: www-data
