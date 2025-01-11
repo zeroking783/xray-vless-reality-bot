@@ -7,3 +7,4 @@ xray_latest_config_path_symlink: "/home/bakvivas/Documents/Projects/xray-vless-r
 xray_config_path: "/home/xray/confs"
 xray_scripts_path: "/home/xray/scripts"
 xray_logs_path: "/home/xray/logs"
+python_interpreter_path: "/home/.venv/bin/python3"
