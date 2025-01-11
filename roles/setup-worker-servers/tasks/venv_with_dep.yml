@@ -1,0 +1,42 @@
+- name: Create python virtual env
+  ansible.builtin.apt:
+    pkg:
+      - python3
+      - python3-pip
+      - python3-venv
+      - python3-dev
+      - libpq-dev
+    state: present
+
+- name: Copy requirements.txt
+  ansible.builtin.copy:
+    src: "{{ requirements_file_path }}"
+    dest: "{{ server_venv_path }}"
+    mode: '0755'
+
+- name: Create virtualenv for python for basic commands
+  ansible.builtin.command:
+    cmd: python3 -m venv .venv
+    chdir: "{{ server_venv_path }}/"
+
+- name: Set ansible_python_interpreter to virtualenv python
+  ansible.builtin.set_fact:
+    ansible_python_interpreter: "{{ server_venv_path }}/.venv/bin/python"
+
+- name: Install packaging library
+  ansible.builtin.command:
+    cmd: "{{ server_venv_path }}/.venv/bin/pip install packaging"
+    chdir: "{{ server_venv_path }}/"
+    
+- name: Ensure pip, setuptools, and packaging are installed
+  ansible.builtin.pip:
+    name:
+      - pip
+      - setuptools
+      - packaging
+    state: latest
+    virtualenv: "{{ server_venv_path }}/.venv"
+
+- name: Install python requirements from requirements.txt
+  ansible.builtin.pip:
+    requirements: "{{ server_venv_path }}/requirements.txt"
