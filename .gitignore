@@ -5,3 +5,5 @@ __pycache__
 .git
 .vagrant
 .vscode
+vault_password_file
+vult_data.txt
