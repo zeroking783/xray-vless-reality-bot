@@ -1,5 +1,7 @@
 syntax = "proto3";
 package xray;
+import "google/protobuf/empty.proto";
+
 
 message ClientIdRequest {
     string name = 1;
@@ -12,4 +14,6 @@ message ClientIdentifierResponse {
 
 service XrayClientsService {
     rpc AddClient(ClientIdRequest) returns (ClientIdentifierResponse);
+    
+    rpc DeleteClient(ClientIdRequest) returns (google.protobuf.empty);
 }
