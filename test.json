@@ -1,14 +1,10 @@
 {
-    "server-43": {
-        "current_hostname": "server-43",
-        "root_password": "}gu,5$7cHe$+Z&_QYQKG",
-        "ssh_port": "50508",
-        "xray_password": "/xD)Z0eUDW[RyZf@eJkX"
-    },
-    "server-44": {
-        "current_hostname": "server-44",
-        "root_password": "0[9yqXu@9+.[?>%):RbN",
-        "ssh_port": "37358",
-        "xray_password": "mNokDJ=&+2!r$DSqrc!V"
+    "server-4": {
+        "ansible_host": "192.168.56.101",
+        "ansible_password": "V?Ih?ZzDuaAOb,8v?J%$",
+        "ansible_port": "40225",
+        "ansible_user": "xray",
+        "current_hostname": "server-4",
+        "root_password": "HUaq#Z<3f[-qFNz$hOvu"
     }
 }
