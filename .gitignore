@@ -11,3 +11,4 @@ vault/vault_data.txt
 vault/root_2025_ca.crt
 vault/intermediate.cert.pem
 vault/pki_intermediate.csr
+servers_certificates
