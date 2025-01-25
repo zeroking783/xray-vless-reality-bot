@@ -6,5 +6,8 @@ __pycache__
 .vagrant
 .vscode
 vault_password_file
-vult_data.txt
+vault_data.txt
 vault/vault_data.txt
+vault/root_2025_ca.crt
+vault/intermediate.cert.pem
+vault/pki_intermediate.csr
