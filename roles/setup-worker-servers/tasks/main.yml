@@ -45,9 +45,11 @@
   ansible.builtin.set_fact:
     server_data:
       root_password: "{{ new_root_password }}"
-      ssh_port: "{{ new_ssh_port }}"
+      ansible_port: "{{ new_ssh_port }}"
       current_hostname: "{{ current_hostname }}"
-      xray_password: "{{ new_xray_password }}"
+      ansible_password: "{{ new_xray_password }}"
+      ansible_host: "{{ ansible_host }}"
+      ansible_user: "xray"
 
 - name: Collect data from all servers into a shared variable on the control node
   delegate_to: localhost
