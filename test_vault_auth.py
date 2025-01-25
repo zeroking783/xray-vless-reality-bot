@@ -14,5 +14,10 @@ client = hvac.Client(url='https://127.0.0.1:8200',
 # Проверка аутентификации
 if client.is_authenticated():
     print("Аутентификация прошла успешно")
+
+    read_response = client.secrets.kv.read_secret_version(path='Cloak/databases/settings_server_db')
+    print(f"Вот твое значение: {read_response['data']['data']}")
+
+
 else:
     print("Ошибка аутентификации")
