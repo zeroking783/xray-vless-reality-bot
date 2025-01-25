@@ -1,6 +1,6 @@
 import psycopg2
-from vault_func import get_vault_token, create_vault_client, read_secret_vault
 from logger import logger
+import sys
 
 
 def connect_to_db(host, port, dbname, user, password):

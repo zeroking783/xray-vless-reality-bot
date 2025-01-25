@@ -1,6 +1,8 @@
 from logger import logger
 import os
+import sys
 import hvac
+
 
 def get_vault_token():
     logger.info(f"Читаю VAULT_TOKEN из переменных окружения")
