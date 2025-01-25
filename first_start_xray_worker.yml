@@ -3,9 +3,7 @@
 #  become: true
 #  vars:
 #    ansible_python_interpreter: /home/bakvivas/Documents/Projects/xray-vless-reality-bot/.venv/bin/python3
-  vars_files:
-    - secrets.yml
   roles:
     - setup-worker-servers
-    - stub-sites
-    - xray-server
+    # - stub-sites
+    # - xray-server
