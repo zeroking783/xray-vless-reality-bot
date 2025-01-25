@@ -2,6 +2,9 @@ syntax = "proto3";
 package xray;
 import "google/protobuf/empty.proto";
 
+message CertificateRequest {
+    string certificate = 1;
+}
 
 message ClientIdRequest {
     string name = 1;
@@ -13,7 +16,8 @@ message ClientIdentifierResponse {
 }
 
 service XrayClientsService {
+    rpc InstallCertificate (CertificateRequest) returns (google.protobuf.Empty);
     rpc AddClient(ClientIdRequest) returns (ClientIdentifierResponse);
-    
-    rpc DeleteClient(ClientIdRequest) returns (google.protobuf.empty);
+    rpc DeleteClient(ClientIdRequest) returns (google.protobuf.Empty);
 }
+
