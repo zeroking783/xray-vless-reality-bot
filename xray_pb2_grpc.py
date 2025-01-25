@@ -3,6 +3,7 @@
 import grpc
 import warnings
 
+from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 import xray_pb2 as xray__pb2
 
 GRPC_GENERATED_VERSION = '1.69.0'
@@ -34,17 +35,39 @@ class XrayClientsServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
+        self.InstallCertificate = channel.unary_unary(
+                '/xray.XrayClientsService/InstallCertificate',
+                request_serializer=xray__pb2.CertificateRequest.SerializeToString,
+                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                _registered_method=True)
         self.AddClient = channel.unary_unary(
                 '/xray.XrayClientsService/AddClient',
                 request_serializer=xray__pb2.ClientIdRequest.SerializeToString,
                 response_deserializer=xray__pb2.ClientIdentifierResponse.FromString,
+                _registered_method=True)
+        self.DeleteClient = channel.unary_unary(
+                '/xray.XrayClientsService/DeleteClient',
+                request_serializer=xray__pb2.ClientIdRequest.SerializeToString,
+                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
 
 
 class XrayClientsServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
+    def InstallCertificate(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def AddClient(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DeleteClient(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -53,10 +76,20 @@ class XrayClientsServiceServicer(object):
 
 def add_XrayClientsServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
+            'InstallCertificate': grpc.unary_unary_rpc_method_handler(
+                    servicer.InstallCertificate,
+                    request_deserializer=xray__pb2.CertificateRequest.FromString,
+                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            ),
             'AddClient': grpc.unary_unary_rpc_method_handler(
                     servicer.AddClient,
                     request_deserializer=xray__pb2.ClientIdRequest.FromString,
                     response_serializer=xray__pb2.ClientIdentifierResponse.SerializeToString,
+            ),
+            'DeleteClient': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteClient,
+                    request_deserializer=xray__pb2.ClientIdRequest.FromString,
+                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -68,6 +101,33 @@ def add_XrayClientsServiceServicer_to_server(servicer, server):
  # This class is part of an EXPERIMENTAL API.
 class XrayClientsService(object):
     """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def InstallCertificate(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/xray.XrayClientsService/InstallCertificate',
+            xray__pb2.CertificateRequest.SerializeToString,
+            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
 
     @staticmethod
     def AddClient(request,
@@ -86,6 +146,33 @@ class XrayClientsService(object):
             '/xray.XrayClientsService/AddClient',
             xray__pb2.ClientIdRequest.SerializeToString,
             xray__pb2.ClientIdentifierResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DeleteClient(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/xray.XrayClientsService/DeleteClient',
+            xray__pb2.ClientIdRequest.SerializeToString,
+            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
             channel_credentials,
             insecure,
