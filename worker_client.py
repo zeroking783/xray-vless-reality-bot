@@ -5,6 +5,15 @@ from concurrent import futures
 from add_client_in_xray_config import add_client
 
 class XrayClientsServiceServicer(xray_pb2_grpc.XrayClientsServiceServicer):
+    def InstallCertificate(self, request, context):
+        cert = request.certificate
+        server_id = request.server_id
+
+        
+
+
+
+
     def AddClient(self, request, context):
         print(f"Добавляю нового клиента {request.name}")
         uuid, shortids = add_client(request.name)
