@@ -19,6 +19,9 @@ def create_tls(server_id, ip):
     with open(f"servers_certificates/{ip}.key", "w") as f:
         f.write(key)
 
+    send_certificate(ip, server_id)
+
+
 
 def check_tls(server_id, ip):
     server_id = server_id.split('-')[-1]
@@ -39,3 +42,20 @@ def check_tls(server_id, ip):
         else:
             create_tls(server_id, ip)
             return True
+
+
+def read_cert(server_id):
+    try:
+        with open(f"{server_id}.crt", "r") as f:
+            cert = f.read()
+            return cert
+    except Exception as e:
+        sys.exit(f"Ошибка при чтении сертификата: {e}")
+
+def read_key(server_id):
+    try:
+        with open(f"{server_id}.key", "r") as f:
+            key = f.read()
+            return key
+    except Exception as e:
+        sys.exit(f"Ошибка при чтении приватного ключа сертификата: {e}")
