@@ -4,6 +4,7 @@ import "google/protobuf/empty.proto";
 
 message CertificateRequest {
     string certificate = 1;
+    string server_id = 2;
 }
 
 message ClientIdRequest {
