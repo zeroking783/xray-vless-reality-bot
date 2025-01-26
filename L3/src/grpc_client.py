@@ -8,10 +8,9 @@ import utils
 def send_certificate(ip, server_id):
     cert = read_cert(server_id)
 
-    with drpc.insecure_channel(f"{ip}:50052") as channel:
+    with grpc.insecure_channel(f"{ip}:50052") as channel:
         stub = xray_pb2_grpc.XrayClientsServiceStub(channel)
-        response = stub.InstallCertificate(xray_pb2.CertificateRequest(certificate=cert))
-    
+        response = stub.InstallCertificate(xray_pb2.CertificateRequest(certificate=cert, server_id=server_id))
 
 
 def send_grpc_request(server_id, ip, method, **kwargs):
