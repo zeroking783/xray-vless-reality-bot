@@ -14,9 +14,9 @@ def create_tls(server_id, ip):
     crt = certificate_response['data']['certificate']
     key = certificate_response['data']['private_key']
 
-    with open(f"servers_certificates/{ip}.crt", "w") as f:
+    with open(f"L3/servers_certificates/{server_id}.crt", "w") as f:
         f.write(crt)
-    with open(f"servers_certificates/{ip}.key", "w") as f:
+    with open(f"L3/servers_certificates/{server_id}.key", "w") as f:
         f.write(key)
 
     send_certificate(ip, server_id)
@@ -46,7 +46,7 @@ def check_tls(server_id, ip):
 
 def read_cert(server_id):
     try:
-        with open(f"{server_id}.crt", "r") as f:
+        with open(f"L3/servers_certificates/{server_id}.crt", "r") as f:
             cert = f.read()
             return cert
     except Exception as e:
@@ -54,7 +54,7 @@ def read_cert(server_id):
 
 def read_key(server_id):
     try:
-        with open(f"{server_id}.key", "r") as f:
+        with open(f"L3/servers_certificates/{server_id}.key", "r") as f:
             key = f.read()
             return key
     except Exception as e:
