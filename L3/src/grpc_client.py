@@ -5,15 +5,22 @@ from ..proto import xray_pb2
 from ..proto import xray_pb2_grpc
 import utils
 
+def send_certificate(ip, server_id):
+    cert = read_cert(server_id)
+
+    with drpc.insecure_channel(f"{ip}:50052") as channel:
+        stub = xray_pb2_grpc.XrayClientsServiceStub(channel)
+        response = stub.InstallCertificate(xray_pb2.CertificateRequest(certificate=cert))
+    
+
 
 def send_grpc_request(server_id, ip, method, **kwargs):
     if not check_tls(server_id, ip):
         sys.exit(f"Не удалось проверить сертификат или не удалось создать его")
     
-    with open(f"servers_certificates/{ip}.crt", "r") as f:
-        certificate = f.read()
-    with open(f"servers_certificates/{ip}.key", "r") as f:
-        private_key = f.read()
+    certificate = read_cert(server_id)
+    private_key = read_key(server_id)
+    
     
     credentials = grpc.ssl_channel_credentials(
         certificate_chain=certificate.encode(),
