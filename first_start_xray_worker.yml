@@ -1,9 +1,13 @@
 - name: first_start_worker
   hosts: xray-workers
+  vars_files:
+    - secrets.yml
 #  become: true
 #  vars:
 #    ansible_python_interpreter: /home/bakvivas/Documents/Projects/xray-vless-reality-bot/.venv/bin/python3
   roles:
-    - setup-worker-servers
+    # - setup-worker-servers
     # - stub-sites
     # - xray-server
+    - vault
+
