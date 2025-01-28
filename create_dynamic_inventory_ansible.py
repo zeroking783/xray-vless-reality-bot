@@ -11,7 +11,7 @@ from db_func import connect_to_db
 
 vault_token = get_vault_token()
 
-client = create_vault_client("https://127.0.0.1:8200", vault_token, "/etc/ssl/certs/vault-cert.pem")
+client = create_vault_client("https://89.169.15.60:8200", vault_token, "/usr/local/share/ca-certificates/tls.crt")
 
 data_db_connect = read_secret_vault(client, 'Cloak/databases/settings_server_db')
 
@@ -31,6 +31,8 @@ base_dynamic_inventory = {
 query_get_new_servers = """
     SELECT * FROM servers.initial WHERE ready = False;
 """
+
+
 
 
 conn, cursor = connect_to_db(data_db_connect["db_host"], 
