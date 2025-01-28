@@ -46,7 +46,7 @@
 
 - name: Get real path to last version config xray
   ansible.builtin.command: 
-    cmd: "readlink -f {{ xray_latest_config_path_symlink }}"
+    cmd: "readlink -f xray_configs/latest"
   register: symlink_target
   delegate_to: localhost
 
@@ -85,7 +85,7 @@
 
 - name: Insert new xray.service file
   ansible.builtin.copy:
-    src: "/home/bakvivas/Documents/Projects/xray-vless-reality-bot/xray.service"
+    src: "xray.service"
     dest: "/etc/systemd/system"
     owner: "root"
     group: "root"
