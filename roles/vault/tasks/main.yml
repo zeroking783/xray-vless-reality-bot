@@ -1,0 +1,79 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for vault
+
+- name: Install ca-certificates
+  ansible.builtin.apt:
+    name: ca-certificates
+    state: present
+    update_cache: yes
+
+- name: Debug variable
+  ansible.builtin.debug:
+    msg: "{{ vault_env }}"
+
+- name: Set env
+  ansible.builtin.lineinfile:
+    path: "/etc/environment"
+    state: present
+    regexp: "^{{ item.key }}="
+    line: "{{ item.key }}={{ item.value}}"
+  with_dict: "{{ vault_env }}"
+  become: yes
+
+- name: Copy SSL certificate
+  ansible.builtin.copy:
+    src: tls.crt
+    dest: "{{ vault_env.VAULT_CACERT }}"
+    owner: root
+    group: root 
+    mode: "0644"
+
+- name: Update ca-cert 
+  ansible.builtin.shell: 
+    cmd: sudo update-ca-certificates
+  become: true
+  become_user: root
+
+- name: Save script get_token.py
+  ansible.builtin.copy: 
+    src: get_token.py
+    dest: /home 
+    owner: root
+    group: root 
+    mode: "0644"
+
+- name: Start cript get_token.py
+  ansible.builtin.shell:
+    cmd: python3 /home/get_token.py
+  environment:
+    role_id: "{{ vault_env.role_id }}"
+    secret_id: "{{ vault_env.secret_id }}"
+    VAULT_ADDR: "{{ vault_env.VAULT_ADDR }}"
+  register: script_output
+
+- name: Debug script_output
+  ansible.builtin.debug:
+    msg: "{{ script_output }}"
+
+- name: register token and accessor
+  ansible.builtin.set_fact:
+    client_token: "{{ script_output.stdout_lines[0] }}"
+    accessor: "{{ script_output.stdout_lines[1] }}"
+  when: script_output.rc == 0
+
+- name: Set env VAULT_TOKEN
+  ansible.builtin.lineinfile:
+    path: "/etc/environment"
+    state: present
+    regexp: "^VAULT_TOKEN="
+    line: "VAULT_TOKEN={{ client_token }}"
+  become: yes
+
+- name: Set env VAULT_TOKEN
+  ansible.builtin.lineinfile:
+    path: "/etc/environment"
+    state: present
+    regexp: "^VAULT_TOKEN_ACCESSOR="
+    line: "VAULT_TOKEN_ACCESSOR={{ accessor }}"
+  become: yes
