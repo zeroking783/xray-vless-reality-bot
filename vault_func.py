@@ -27,7 +27,7 @@ def create_vault_client(vault_url, token, cert_path):
 def read_secret_vault(client, path, only_data=True):
     logger.info(f"Начинаю читать данные в Vault")
     try:
-        response = client.secrets.kv.read_secret_version(path=path)
+        response = client.secrets.kv.v2.read_secret_version(path=path, mount_point="kv")
         logger.debug(f"Запрос в Vault выполнен успешно")
         if "data" in response and "data" in response["data"]:
             logger.debug(f"Данные сущесвтуют и успешно прочитаны")
@@ -36,5 +36,5 @@ def read_secret_vault(client, path, only_data=True):
             else:
                 return response
     except Exception as e:
-        logger.eror(f"Ошибка при чтении данных в Vault:\n{e}")
+        logger.error(f"Ошибка при чтении данных в Vault:\n{e}")
         sys.exit(f"Ошибка при чтении данных в Vault")
