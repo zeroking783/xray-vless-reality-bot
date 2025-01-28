@@ -1,0 +1,11 @@
+cffi==1.17.1
+cryptography==44.0.0
+grpcio==1.69.0
+grpcio-tools==1.69.0
+passlib==1.7.4
+protobuf==5.29.3
+psycopg2==2.9.10
+psycopg2-binary==2.9.10
+pycparser==2.22
+python-dotenv==1.0.1
+setuptools==75.8.0
