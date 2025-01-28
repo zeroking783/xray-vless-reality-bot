@@ -10,7 +10,7 @@
 
 - name: Copy requirements.txt
   ansible.builtin.copy:
-    src: "{{ requirements_file_path }}"
+    src: "requirements.txt"
     dest: "{{ server_venv_path }}"
     mode: '0755'
 
